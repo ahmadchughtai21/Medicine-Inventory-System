@@ -1,3 +1,6 @@
+#include <string>
+using namespace std;
+
 void compareViewMedicines()
 {
     // linkedListViewMedicines();
