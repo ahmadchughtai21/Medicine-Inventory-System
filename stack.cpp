@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+using namespace std;
 // Structure to store date components
 struct Date {
     int year;
