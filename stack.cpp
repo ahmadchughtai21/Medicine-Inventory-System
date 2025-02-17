@@ -1,397 +1,489 @@
 #include <iostream>
 #include <string>
-#include <ctime>
+#include <iomanip>
+#include <limits>
 using namespace std;
-// Structure to store date components
-struct Date {
-    int year;
-    int month;
-    int day;
-};
 
-// Function to convert string date to Date structure
-Date stringToDate(string dateStr) {
-    Date date;
-    sscanf(dateStr.c_str(), "%d-%d-%d", &date.year, &date.month, &date.day);
-    return date;
-}
+// Terminal color codes for better user interface feedback
+#define RESET "\033[0m"
+#define BLUE "\033[34m"
+#define GREEN "\033[32m"
+#define RED "\033[31m"
+#define CYAN "\033[36m"
+#define YELLOW "\033[33m"
 
-// Function to compare dates
-bool isDate1BeforeDate2(Date date1, Date date2) {
-    if (date1.year < date2.year) return true;
-    if (date1.year > date2.year) return false;
-    if (date1.month < date2.month) return true;
-    if (date1.month > date2.month) return false;
-    return date1.day < date2.day;
-}
-
-// Get current date
-Date getCurrentDate() {
-    time_t now = time(0);
-    tm* ltm = localtime(&now);
-    Date currentDate;
-    currentDate.year = 1900 + ltm->tm_year;
-    currentDate.month = 1 + ltm->tm_mon;
-    currentDate.day = ltm->tm_mday;
-    return currentDate;
-}
-
-// Function to check if a date is close to expiry (within 30 days)
-bool isCloseToExpiry(Date expiryDate) {
-    Date currentDate = getCurrentDate();
-    int diffDays = (expiryDate.year - currentDate.year) * 365 +
-                   (expiryDate.month - currentDate.month) * 30 +
-                   (expiryDate.day - currentDate.day);
-    return (diffDays > 0 && diffDays <= 30);
-}
-
-// Structure to represent a medicine
-struct Medicine {
+/**
+ * Medicine node structure for stack linked list implementation
+ * Each node contains medicine details and pointer to next node
+ */
+struct Medicine
+{
+    int id;
     string name;
     double price;
     int quantity;
     string expiryDate;
-    string manufacturingDate;
+    Medicine *next;
+
+    Medicine(int i, string n, double p, int q, string exp) : id(i), name(n), price(p), quantity(q), expiryDate(exp), next(nullptr) {}
 };
 
-// Stack class to manage medicines
-class Stack {
+/**
+ * Input validation helper functions
+ */
+bool isDigit(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+bool isValidMonth(int month)
+{
+    return month >= 1 && month <= 12;
+}
+
+bool isValidYear(int year)
+{
+    return year >= 2000 && year <= 9999;
+}
+
+/**
+ * Validates expiry date format (MM/YYYY)
+ * Returns true if format is valid and month is between 1-12
+ */
+bool isValidExpiryFormat(const string &expiryDate)
+{
+    if (expiryDate.length() != 7 || expiryDate[2] != '/')
+        return false;
+
+    string monthStr = expiryDate.substr(0, 2);
+    string yearStr = expiryDate.substr(3, 4);
+
+    for (char c : monthStr)
+        if (!isDigit(c))
+            return false;
+    for (char c : yearStr)
+        if (!isDigit(c))
+            return false;
+
+    int month = stoi(monthStr);
+    return (month >= 1 && month <= 12);
+}
+
+/**
+ * Gets current date from user with validation
+ * Returns false if input is invalid
+ */
+bool getCurrentDate(int &month, int &year)
+{
+    cout << "Enter current month (1-12): ";
+    cin >> month;
+    if (!isValidMonth(month))
+    {
+        cout << RED << "Invalid month! Please enter a number between 1 and 12." << RESET << endl;
+        return false;
+    }
+
+    cout << "Enter current year (YYYY): ";
+    cin >> year;
+    if (!isValidYear(year))
+    {
+        cout << RED << "Invalid year! Please enter a valid year (2000-9999)." << RESET << endl;
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Handles expiry date input with validation
+ * Keeps prompting until valid format is entered
+ */
+string inputExpiryDate()
+{
+    string expiryDate;
+    do
+    {
+        cout << "Enter expiry date (MM/YYYY): ";
+        cin >> expiryDate;
+        if (!isValidExpiryFormat(expiryDate))
+        {
+            cout << RED << "Invalid format! Please enter in MM/YYYY format." << RESET << endl;
+        }
+    } while (!isValidExpiryFormat(expiryDate));
+    return expiryDate;
+}
+
+/**
+ * Main class for medicine management
+ * Implements a stack-based linked list for storing and managing medicine data
+ */
+class MedicineList
+{
 private:
-    static const int MAX_SIZE = 100; // Maximum stack size
-    Medicine medicines[MAX_SIZE];    // Array to store medicines
-    int top;                         // Index of the top element
+    Medicine *top;
+    int count;
 
 public:
-    Stack() : top(-1) {} // Constructor to initialize the stack
+    MedicineList() : top(nullptr), count(0) {}
 
-    bool isEmpty() { return top == -1; }
-    bool isFull() { return top == MAX_SIZE - 1; }
+    ~MedicineList()
+    {
+        Medicine *current = top;
+        while (current != nullptr)
+        {
+            Medicine *next = current->next;
+            delete current;
+            current = next;
+        }
+    }
 
-    void push(Medicine medicine) {
-        if (isFull()) {
-            cout << "Stack is full. Cannot add more medicines." << endl;
+    bool isIdUnique(int id)
+    {
+        Medicine *current = top;
+        while (current != nullptr)
+        {
+            if (current->id == id)
+                return false;
+            current = current->next;
+        }
+        return true;
+    }
+
+    void addMedicine(int id, string name, double price, int quantity, string expiryDate)
+    {
+        Medicine *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
+        newMedicine->next = top;
+        top = newMedicine;
+        count++;
+
+        cout << GREEN << "Medicine added successfully!" << RESET << endl;
+    }
+
+    void searchByName(const string &name)
+    {
+        Medicine *current = top;
+        bool found = false;
+
+        cout << "\n" << CYAN << "Search Results:" << RESET << endl;
+        printHeader();
+
+        while (current != nullptr)
+        {
+            if (current->name == name)
+            {
+                printMedicine(current);
+                found = true;
+            }
+            current = current->next;
+        }
+
+        if (!found)
+        {
+            cout << RED << "Medicine with name '" << name << "' not found." << RESET << endl;
+        }
+    }
+
+    void searchById(int id)
+    {
+        Medicine *current = top;
+        bool found = false;
+
+        cout << "\n" << CYAN << "Search Results:" << RESET << endl;
+        printHeader();
+
+        while (current != nullptr)
+        {
+            if (current->id == id)
+            {
+                printMedicine(current);
+                found = true;
+                break;
+            }
+            current = current->next;
+        }
+
+        if (!found)
+        {
+            cout << RED << "Medicine with ID " << id << " not found." << RESET << endl;
+        }
+    }
+
+    void searchByExpiryDate(const string &expiryDate)
+    {
+        Medicine *current = top;
+        bool found = false;
+
+        cout << "\n" << CYAN << "Search Results:" << RESET << endl;
+        printHeader();
+
+        while (current != nullptr)
+        {
+            if (current->expiryDate == expiryDate)
+            {
+                printMedicine(current);
+                found = true;
+            }
+            current = current->next;
+        }
+
+        if (!found)
+        {
+            cout << RED << "No medicines expiring in " << expiryDate << " found." << RESET << endl;
+        }
+    }
+
+    Medicine *getLastNode(Medicine *node)
+    {
+        while (node && node->next)
+        {
+            node = node->next;
+        }
+        return node;
+    }
+
+    Medicine *partitionByName(Medicine *start, Medicine *end)
+    {
+        string pivot = end->name;
+        Medicine *i = start;
+        
+        for (Medicine *j = start; j != end; j = j->next)
+        {
+            if (j->name < pivot)
+            {
+                swap(i->name, j->name);
+                swap(i->id, j->id);
+                swap(i->price, j->price);
+                swap(i->quantity, j->quantity);
+                swap(i->expiryDate, j->expiryDate);
+                i = i->next;
+            }
+        }
+        swap(i->name, end->name);
+        swap(i->id, end->id);
+        swap(i->price, end->price);
+        swap(i->quantity, end->quantity);
+        swap(i->expiryDate, end->expiryDate);
+        return i;
+    }
+
+    void quickSortByName(Medicine *start, Medicine *end)
+    {
+        if (start != nullptr && end != nullptr && start != end && start != end->next)
+        {
+            Medicine *pivot = partitionByName(start, end);
+            Medicine *temp = start;
+            while (temp->next != pivot)
+                temp = temp->next;
+            quickSortByName(start, temp);
+            quickSortByName(pivot->next, end);
+        }
+    }
+
+    void sortByName()
+    {
+        if (top == nullptr || top->next == nullptr)
             return;
-        }
-        medicines[++top] = medicine;
-        cout << "Medicine added successfully!" << endl;
+        quickSortByName(top, getLastNode(top));
     }
 
-    Medicine pop() {
-        if (isEmpty()) {
-            cout << "Stack is empty. No medicine to remove." << endl;
-            return Medicine();
+    Medicine *partitionById(Medicine *start, Medicine *end)
+    {
+        int pivot = end->id;
+        Medicine *i = start;
+        
+        for (Medicine *j = start; j != end; j = j->next)
+        {
+            if (j->id < pivot)
+            {
+                swap(i->id, j->id);
+                swap(i->name, j->name);
+                swap(i->price, j->price);
+                swap(i->quantity, j->quantity);
+                swap(i->expiryDate, j->expiryDate);
+                i = i->next;
+            }
         }
-        return medicines[top--];
+        swap(i->id, end->id);
+        swap(i->name, end->name);
+        swap(i->price, end->price);
+        swap(i->quantity, end->quantity);
+        swap(i->expiryDate, end->expiryDate);
+        return i;
     }
 
-    void display() {
-        if (isEmpty()) {
-            cout << "No medicines to display." << endl;
+    void quickSortById(Medicine *start, Medicine *end)
+    {
+        if (start != nullptr && end != nullptr && start != end && start != end->next)
+        {
+            Medicine *pivot = partitionById(start, end);
+            Medicine *temp = start;
+            while (temp->next != pivot)
+                temp = temp->next;
+            quickSortById(start, temp);
+            quickSortById(pivot->next, end);
+        }
+    }
+
+    void sortById()
+    {
+        if (top == nullptr || top->next == nullptr)
             return;
-        }
-        cout << "\n--- Medicines in Stock ---" << endl;
-        for (int i = 0; i <= top; i++) {
-            cout << "Name: " << medicines[i].name << ", Price: " << medicines[i].price
-                 << ", Quantity: " << medicines[i].quantity << ", Expiry Date: " << medicines[i].expiryDate
-                 << ", Manufacturing Date: " << medicines[i].manufacturingDate << endl;
-        }
+        quickSortById(top, getLastNode(top));
     }
 
-    void searchByName(string name) {
-        bool found = false;
-        for (int i = 0; i <= top; i++) {
-            if (medicines[i].name == name) {
-                found = true;
-                cout << "Medicine found: " << medicines[i].name << ", Price: " << medicines[i].price
-                     << ", Quantity: " << medicines[i].quantity << ", Expiry Date: " << medicines[i].expiryDate
-                     << ", Manufacturing Date: " << medicines[i].manufacturingDate << endl;
+    Medicine *partitionByExpiryDate(Medicine *start, Medicine *end)
+    {
+        string pivot = end->expiryDate;
+        Medicine *i = start;
+        
+        for (Medicine *j = start; j != end; j = j->next)
+        {
+            if (j->expiryDate < pivot)
+            {
+                swap(i->id, j->id);
+                swap(i->name, j->name);
+                swap(i->price, j->price);
+                swap(i->quantity, j->quantity);
+                swap(i->expiryDate, j->expiryDate);
+                i = i->next;
             }
         }
-        if (!found) {
-            cout << "Medicine not found." << endl;
+        swap(i->id, end->id);
+        swap(i->name, end->name);
+        swap(i->price, end->price);
+        swap(i->quantity, end->quantity);
+        swap(i->expiryDate, end->expiryDate);
+        return i;
+    }
+
+    void quickSortByExpiryDate(Medicine *start, Medicine *end)
+    {
+        if (start != nullptr && end != nullptr && start != end && start != end->next)
+        {
+            Medicine *pivot = partitionByExpiryDate(start, end);
+            Medicine *temp = start;
+            while (temp->next != pivot)
+                temp = temp->next;
+            quickSortByExpiryDate(start, temp);
+            quickSortByExpiryDate(pivot->next, end);
         }
     }
 
-    void searchByPrice(double price) {
-        bool found = false;
-        for (int i = 0; i <= top; i++) {
-            if (medicines[i].price == price) {
-                found = true;
-                cout << "Medicine found: " << medicines[i].name << ", Price: " << medicines[i].price
-                     << ", Quantity: " << medicines[i].quantity << ", Expiry Date: " << medicines[i].expiryDate
-                     << ", Manufacturing Date: " << medicines[i].manufacturingDate << endl;
-            }
-        }
-        if (!found) {
-            cout << "No medicines found with price " << price << "." << endl;
-        }
+    void sortByExpiryDate()
+    {
+        if (top == nullptr || top->next == nullptr)
+            return;
+        quickSortByExpiryDate(top, getLastNode(top));
     }
 
-    void searchByQuantity(int quantity) {
-        bool found = false;
-        for (int i = 0; i <= top; i++) {
-            if (medicines[i].quantity == quantity) {
-                found = true;
-                cout << "Medicine found: " << medicines[i].name << ", Price: " << medicines[i].price
-                     << ", Quantity: " << medicines[i].quantity << ", Expiry Date: " << medicines[i].expiryDate
-                     << ", Manufacturing Date: " << medicines[i].manufacturingDate << endl;
-            }
-        }
-        if (!found) {
-            cout << "No medicines found with quantity " << quantity << "." << endl;
-        }
-    }
+    bool updateMedicine(int id)
+    {
+        Medicine *current = top;
 
-    void searchByExpiryDate(string expiryDate) {
-        bool found = false;
-        for (int i = 0; i <= top; i++) {
-            if (medicines[i].expiryDate == expiryDate) {
-                found = true;
-                cout << "Medicine found: " << medicines[i].name << ", Price: " << medicines[i].price
-                     << ", Quantity: " << medicines[i].quantity << ", Expiry Date: " << medicines[i].expiryDate
-                     << ", Manufacturing Date: " << medicines[i].manufacturingDate << endl;
-            }
-        }
-        if (!found) {
-            cout << "No medicines found with expiry date " << expiryDate << "." << endl;
-        }
-    }
-
-    void searchByManufacturingDate(string manufacturingDate) {
-        bool found = false;
-        for (int i = 0; i <= top; i++) {
-            if (medicines[i].manufacturingDate == manufacturingDate) {
-                found = true;
-                cout << "Medicine found: " << medicines[i].name << ", Price: " << medicines[i].price
-                     << ", Quantity: " << medicines[i].quantity << ", Expiry Date: " << medicines[i].expiryDate
-                     << ", Manufacturing Date: " << medicines[i].manufacturingDate << endl;
-            }
-        }
-        if (!found) {
-            cout << "No medicines found with manufacturing date " << manufacturingDate << "." << endl;
-        }
-    }
-
-    void sortByName() {
-        sort(medicines, medicines + top + 1, [](Medicine a, Medicine b) { return a.name < b.name; });
-        cout << "Medicines sorted by name." << endl;
-    }
-
-    void sortByPrice() {
-        sort(medicines, medicines + top + 1, [](Medicine a, Medicine b) { return a.price < b.price; });
-        cout << "Medicines sorted by price." << endl;
-    }
-
-    void sortByQuantity() {
-        sort(medicines, medicines + top + 1, [](Medicine a, Medicine b) { return a.quantity < b.quantity; });
-        cout << "Medicines sorted by quantity." << endl;
-    }
-
-    void sortByExpiryDate() {
-        sort(medicines, medicines + top + 1, [](Medicine a, Medicine b) { return a.expiryDate < b.expiryDate; });
-        cout << "Medicines sorted by expiry date." << endl;
-    }
-
-    void sortByManufacturingDate() {
-        sort(medicines, medicines + top + 1, [](Medicine a, Medicine b) { return a.manufacturingDate < b.manufacturingDate; });
-        cout << "Medicines sorted by manufacturing date." << endl;
-    }
-
-    void viewLowStockMedicines() {
-        cout << "\n--- Medicines with Low Stock (less than 5) ---" << endl;
-        bool found = false;
-        for (int i = 0; i <= top; i++) {
-            if (medicines[i].quantity < 5) {
-                found = true;
-                cout << "Name: " << medicines[i].name << ", Quantity: " << medicines[i].quantity << endl;
-            }
-        }
-        if (!found) {
-            cout << "No medicines with low stock." << endl;
-        }
-    }
-
-    void viewOutOfStockMedicines() {
-        cout << "\n--- Medicines Out of Stock ---" << endl;
-        bool found = false;
-        for (int i = 0; i <= top; i++) {
-            if (medicines[i].quantity == 0) {
-                found = true;
-                cout << "Name: " << medicines[i].name << ", Quantity: " << medicines[i].quantity << endl;
-            }
-        }
-        if (!found) {
-            cout << "No medicines are out of stock." << endl;
-        }
-    }
-
-};
-
-// Function prototypes
-void manageMedicinesMenu();
-void searchMedicinesMenu();
-void stockManagementMenu();
-void viewMedicines();
-void addMedicine();
-void deleteMedicine();
-void sortMedicinesMenu();
-
-// Manage Medicines Menu
-void manageMedicinesMenu() {
-    int choice;
-    do {
-        cout << "\n--- Manage Medicines Menu ---" << endl;
-        cout << "1. View Medicines\n";
-        cout << "2. Add Medicine\n";
-        cout << "3. Delete Medicine\n";
-        cout << "4. Search Medicines\n";
-        cout << "5. Sort Medicines\n";
-        cout << "6. Stock Management\n";
-        cout << "7. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
-
-        switch (choice) {
-            case 1: viewMedicines(); break;
-            case 2: addMedicine(); break;
-            case 3: deleteMedicine(); break;
-            case 4: searchMedicinesMenu(); break;
-            case 5: sortMedicinesMenu(); break;
-            case 6: stockManagementMenu(); break;
-            case 7: cout << "Exiting...\n"; break;
-            default: cout << "Invalid choice. Please try again.\n";
-        }
-    } while (choice != 7);
-}
-
-// Search Medicines Menu
-void searchMedicinesMenu() {
-    int choice;
-    do {
-        cout << "\n--- Search Medicines Menu ---" << endl;
-        cout << "1. Search by Name\n";
-        cout << "2. Search by Price\n";
-        cout << "3. Search by Quantity\n";
-        cout << "4. Search by Expiry Date\n";
-        cout << "5. Search by Manufacturing Date\n";
-        cout << "6. Go Back\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
-
-        string input;
-        double price;
-        int quantity;
-        switch (choice) {
-            case 1: {
+        while (current != nullptr)
+        {
+            if (current->id == id)
+            {
+                cout << "Enter new details for Medicine ID " << id << ":\n";
+                
                 cout << "Enter Medicine Name: ";
                 cin.ignore();
-                getline(cin, input);
-                medicineStack.searchByName(input);
-                break;
-            }
-            case 2: {
+                getline(cin, current->name);
+
                 cout << "Enter Price: ";
-                cin >> price;
-                medicineStack.searchByPrice(price);
-                break;
-            }
-            case 3: {
+                cin >> current->price;
+
                 cout << "Enter Quantity: ";
-                cin >> quantity;
-                medicineStack.searchByQuantity(quantity);
-                break;
+                cin >> current->quantity;
+
+                current->expiryDate = inputExpiryDate();
+
+                return true;
             }
-            case 4: {
-                cout << "Enter Expiry Date (YYYY-MM-DD): ";
-                cin >> input;
-                medicineStack.searchByExpiryDate(input);
-                break;
-            }
-            case 5: {
-                cout << "Enter Manufacturing Date (YYYY-MM-DD): ";
-                cin >> input;
-                medicineStack.searchByManufacturingDate(input);
-                break;
-            }
-            case 6: return;
-            default: cout << "Invalid choice. Please try again.\n"; break;
+            current = current->next;
         }
-    } while (true);
-}
-
-// View all medicines
-void viewMedicines() {
-    medicineStack.display();
-}
-
-// Add a new medicine
-void addMedicine() {
-    Medicine med;
-    cout << "Enter Medicine Name: ";
-    cin.ignore();
-    getline(cin, med.name);
-    cout << "Enter Price: ";
-    cin >> med.price;
-    cout << "Enter Quantity: ";
-    cin >> med.quantity;
-    cout << "Enter Expiry Date (YYYY-MM-DD): ";
-    cin >> med.expiryDate;
-    cout << "Enter Manufacturing Date (YYYY-MM-DD): ";
-    cin >> med.manufacturingDate;
-
-    medicineStack.push(med);
-}
-
-// Delete the top medicine
-void deleteMedicine() {
-    Medicine med = medicineStack.pop();
-    if (!med.name.empty()) {
-        cout << "Removed Medicine: " << med.name << endl;
+        return false;
     }
-}
 
-// Stock Management Menu
-void stockManagementMenu() {
-    int choice;
-    do {
-        cout << "\n--- Stock Management Menu ---" << endl;
-        cout << "1. View Low Stock Medicines\n";
-        cout << "2. View Out of Stock Medicines\n";
-        cout << "3. Go Back\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+    void autoDeleteExpired(int currentMonth, int currentYear)
+    {
+        Medicine *newTop = nullptr;
+        Medicine *current = top;
+        bool foundExpired = false;
 
-        switch (choice) {
-            case 1: medicineStack.viewLowStockMedicines(); break;
-            case 2: medicineStack.viewOutOfStockMedicines(); break;
-            case 3: return;
-            default: cout << "Invalid choice. Please try again.\n"; break;
+        while (current != nullptr)
+        {
+            string monthStr = current->expiryDate.substr(0, 2);
+            string yearStr = current->expiryDate.substr(3, 4);
+            int expiryMonth = stoi(monthStr);
+            int expiryYear = stoi(yearStr);
+
+            Medicine *next = current->next;
+
+            if (expiryYear < currentYear || (expiryYear == currentYear && expiryMonth < currentMonth))
+            {
+                cout << RED << "Auto-deleted expired medicine: " << current->name
+                     << " (ID: " << current->id
+                     << ", Expiry: " << current->expiryDate << ")" << RESET << endl;
+                delete current;
+                count--;
+                foundExpired = true;
+            }
+            else
+            {
+                current->next = newTop;
+                newTop = current;
+            }
+            current = next;
         }
-    } while (true);
-}
 
-// Sort Medicines Menu
-void sortMedicinesMenu() {
-    int choice;
-    do {
-        cout << "\n--- Sort Medicines Menu ---" << endl;
-        cout << "1. Sort by Name\n";
-        cout << "2. Sort by Price\n";
-        cout << "3. Sort by Quantity\n";
-        cout << "4. Sort by Expiry Date\n";
-        cout << "5. Sort by Manufacturing Date\n";
-        cout << "6. Go Back\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+        top = newTop;
 
-        switch (choice) {
-            case 1: medicineStack.sortByName(); break;
-            case 2: medicineStack.sortByPrice(); break;
-            case 3: medicineStack.sortByQuantity(); break;
-            case 4: medicineStack.sortByExpiryDate(); break;
-            case 5: medicineStack.sortByManufacturingDate(); break;
-            case 6: return;
-            default: cout << "Invalid choice. Please try again.\n"; break;
+        if (!foundExpired)
+        {
+            cout << GREEN << "No expired medicines found." << RESET << endl;
         }
-    } while (true);
-}
+    }
+
+    void displayAll()
+    {
+        if (top == nullptr)
+        {
+            cout << RED << "No medicines available to display." << RESET << endl;
+            return;
+        }
+
+        cout << "\n----------------------" << endl;
+        cout << GREEN << "   All Medicines:   " << RESET << endl;
+        cout << "----------------------\n" << endl;
+
+        printHeader();
+
+        Medicine *current = top;
+        while (current != nullptr)
+        {
+            printMedicine(current);
+            current = current->next;
+        }
+    }
+
+private:
+    void printHeader()
+    {
+        cout << setw(5) << "ID" << setw(20) << "Name"
+             << setw(10) << "Price" << setw(10) << "Quantity"
+             << setw(15) << "Expiry Date" << endl;
+        cout << string(60, '-') << endl;
+    }
+
+    void printMedicine(Medicine *med)
+    {
+        cout << setw(5) << med->id
+             << setw(20) << med->name
+             << setw(10) << fixed << setprecision(2) << med->price
+             << setw(10) << med->quantity
+             << setw(15) << med->expiryDate << endl;
+    }
+
+public:
+    int getCount() const { return count; }
+};
