@@ -1,15 +1,21 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-
+#include <limits>
 using namespace std;
 
+// Terminal color codes for better user interface feedback
 #define RESET "\033[0m"
+#define BLUE "\033[34m"
 #define GREEN "\033[32m"
 #define RED "\033[31m"
 #define CYAN "\033[36m"
 #define YELLOW "\033[33m"
 
+/**
+ * Medicine node structure for queue linked list implementation
+ * Each node contains medicine details and pointer to next node
+ */
 struct Medicine
 {
     int id;
@@ -19,72 +25,362 @@ struct Medicine
     string expiryDate;
     Medicine *next;
 
-    Medicine(int i, string n, double p, int q, string exp)
-        : id(i), name(n), price(p), quantity(q), expiryDate(exp), next(nullptr) {}
+    Medicine(int i, string n, double p, int q, string exp) : id(i), name(n), price(p), quantity(q), expiryDate(exp), next(nullptr) {}
 };
 
 /**
- * Medicine Queue Class
- * Implements a Queue using a circular linked list
+ * Input validation helper functions
  */
-class MedicineQueue
+bool isDigit(char c)
+{
+    return (c >= '0' && c <= '9');
+}
+
+bool isValidMonth(int month)
+{
+    return month >= 1 && month <= 12;
+}
+
+bool isValidYear(int year)
+{
+    return year >= 2000 && year <= 9999;
+}
+
+/**
+ * Validates expiry date format (MM/YYYY)
+ * Returns true if format is valid and month is between 1-12
+ */
+bool isValidExpiryFormat(const string &expiryDate)
+{
+    if (expiryDate.length() != 7 || expiryDate[2] != '/')
+        return false;
+
+    string monthStr = expiryDate.substr(0, 2);
+    string yearStr = expiryDate.substr(3, 4);
+
+    for (char c : monthStr)
+        if (!isDigit(c))
+            return false;
+    for (char c : yearStr)
+        if (!isDigit(c))
+            return false;
+
+    int month = stoi(monthStr);
+    return (month >= 1 && month <= 12);
+}
+
+/**
+ * Gets current date from user with validation
+ * Returns false if input is invalid
+ */
+bool getCurrentDate(int &month, int &year)
+{
+    cout << "Enter current month (1-12): ";
+    cin >> month;
+    if (!isValidMonth(month))
+    {
+        cout << RED << "Invalid month! Please enter a number between 1 and 12." << RESET << endl;
+        return false;
+    }
+
+    cout << "Enter current year (YYYY): ";
+    cin >> year;
+    if (!isValidYear(year))
+    {
+        cout << RED << "Invalid year! Please enter a valid year (2000-9999)." << RESET << endl;
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Handles expiry date input with validation
+ * Keeps prompting until valid format is entered
+ */
+string inputExpiryDate()
+{
+    string expiryDate;
+    do
+    {
+        cout << "Enter expiry date (MM/YYYY): ";
+        cin >> expiryDate;
+        if (!isValidExpiryFormat(expiryDate))
+        {
+            cout << RED << "Invalid format! Please enter in MM/YYYY format." << RESET << endl;
+        }
+    } while (!isValidExpiryFormat(expiryDate));
+    return expiryDate;
+}
+
+/**
+ * Main class for medicine management
+ * Implements a queue linked list for storing and managing medicine data
+ */
+class MedicineList
 {
 private:
     Medicine *front;
     Medicine *rear;
     int count;
 
-public:
-    MedicineQueue() : front(nullptr), rear(nullptr), count(0) {}
-
-    ~MedicineQueue()
+    void printHeader()
     {
-        while (!isEmpty())
+        cout << setw(5) << "ID" << setw(20) << "Name"
+             << setw(10) << "Price" << setw(10) << "Quantity"
+             << setw(15) << "Expiry Date" << endl;
+        cout << string(60, '-') << endl;
+    }
+
+    void printMedicine(Medicine *med)
+    {
+        cout << setw(5) << med->id
+             << setw(20) << med->name
+             << setw(10) << fixed << setprecision(2) << med->price
+             << setw(10) << med->quantity
+             << setw(15) << med->expiryDate << endl;
+    }
+
+public:
+    MedicineList() : front(nullptr), rear(nullptr), count(0) {}
+
+    ~MedicineList()
+    {
+        Medicine *current = front;
+        while (current != nullptr)
         {
-            dequeue();
+            Medicine *next = current->next;
+            delete current;
+            current = next;
         }
     }
 
-    // Checks if the queue is empty
-    bool isEmpty()
+    bool isIdUnique(int id)
     {
-        return front == nullptr;
+        Medicine *current = front;
+        while (current != nullptr)
+        {
+            if (current->id == id)
+                return false;
+            current = current->next;
+        }
+        return true;
     }
 
-    // Adds a medicine to the queue (Enqueue)
-    void enqueue(int id, string name, double price, int quantity, string expiryDate)
+    void addMedicine(int id, string name, double price, int quantity, string expiryDate)
     {
         Medicine *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
-        if (isEmpty())
+
+        if (rear == nullptr)
         {
             front = rear = newMedicine;
-            rear->next = front; // Circular Link
         }
         else
         {
             rear->next = newMedicine;
             rear = newMedicine;
-            rear->next = front; // Maintain circular nature
         }
         count++;
 
         cout << GREEN << "Medicine added successfully!" << RESET << endl;
     }
 
-    // Removes expired medicine from queue (Dequeue)
-    void autoDeleteExpired(int currentMonth, int currentYear)
+    void searchByName(const string &name)
     {
-        if (isEmpty())
+        Medicine *current = front;
+        bool found = false;
+
+        cout << "\n" << CYAN << "Search Results:" << RESET << endl;
+        printHeader();
+
+        while (current != nullptr)
         {
-            cout << RED << "No medicines available to check for expiry." << RESET << endl;
-            return;
+            if (current->name == name)
+            {
+                printMedicine(current);
+                found = true;
+            }
+            current = current->next;
         }
 
+        if (!found)
+        {
+            cout << RED << "Medicine with name '" << name << "' not found." << RESET << endl;
+        }
+    }
+
+    void searchById(int id)
+    {
         Medicine *current = front;
-        Medicine *prev = nullptr;
-        int expiredCount = 0;
+        bool found = false;
+
+        cout << "\n" << CYAN << "Search Results:" << RESET << endl;
+        printHeader();
+
+        while (current != nullptr)
+        {
+            if (current->id == id)
+            {
+                printMedicine(current);
+                found = true;
+                break;
+            }
+            current = current->next;
+        }
+
+        if (!found)
+        {
+            cout << RED << "Medicine with ID " << id << " not found." << RESET << endl;
+        }
+    }
+
+    void searchByExpiryDate(const string &expiryDate)
+    {
+        Medicine *current = front;
+        bool found = false;
+
+        cout << "\n" << CYAN << "Search Results:" << RESET << endl;
+        printHeader();
+
+        while (current != nullptr)
+        {
+            if (current->expiryDate == expiryDate)
+            {
+                printMedicine(current);
+                found = true;
+            }
+            current = current->next;
+        }
+
+        if (!found)
+        {
+            cout << RED << "No medicines expiring in " << expiryDate << " found." << RESET << endl;
+        }
+    }
+
+    void sortByName()
+    {
+        if (front == nullptr || front->next == nullptr)
+            return;
+        
+        bool swapped;
+        Medicine *ptr1;
+        Medicine *lptr = nullptr;
 
         do
+        {
+            swapped = false;
+            ptr1 = front;
+
+            while (ptr1->next != lptr)
+            {
+                if (ptr1->name > ptr1->next->name)
+                {
+                    swap(ptr1->name, ptr1->next->name);
+                    swap(ptr1->id, ptr1->next->id);
+                    swap(ptr1->price, ptr1->next->price);
+                    swap(ptr1->quantity, ptr1->next->quantity);
+                    swap(ptr1->expiryDate, ptr1->next->expiryDate);
+                    swapped = true;
+                }
+                ptr1 = ptr1->next;
+            }
+            lptr = ptr1;
+        } while (swapped);
+    }
+
+    void sortById()
+    {
+        if (front == nullptr || front->next == nullptr)
+            return;
+        
+        bool swapped;
+        Medicine *ptr1;
+        Medicine *lptr = nullptr;
+
+        do
+        {
+            swapped = false;
+            ptr1 = front;
+
+            while (ptr1->next != lptr)
+            {
+                if (ptr1->id > ptr1->next->id)
+                {
+                    swap(ptr1->name, ptr1->next->name);
+                    swap(ptr1->id, ptr1->next->id);
+                    swap(ptr1->price, ptr1->next->price);
+                    swap(ptr1->quantity, ptr1->next->quantity);
+                    swap(ptr1->expiryDate, ptr1->next->expiryDate);
+                    swapped = true;
+                }
+                ptr1 = ptr1->next;
+            }
+            lptr = ptr1;
+        } while (swapped);
+    }
+
+    void sortByExpiryDate()
+    {
+        if (front == nullptr || front->next == nullptr)
+            return;
+        
+        bool swapped;
+        Medicine *ptr1;
+        Medicine *lptr = nullptr;
+
+        do
+        {
+            swapped = false;
+            ptr1 = front;
+
+            while (ptr1->next != lptr)
+            {
+                if (ptr1->expiryDate > ptr1->next->expiryDate)
+                {
+                    swap(ptr1->name, ptr1->next->name);
+                    swap(ptr1->id, ptr1->next->id);
+                    swap(ptr1->price, ptr1->next->price);
+                    swap(ptr1->quantity, ptr1->next->quantity);
+                    swap(ptr1->expiryDate, ptr1->next->expiryDate);
+                    swapped = true;
+                }
+                ptr1 = ptr1->next;
+            }
+            lptr = ptr1;
+        } while (swapped);
+    }
+
+    bool updateMedicine(int id)
+    {
+        Medicine *current = front;
+
+        while (current != nullptr)
+        {
+            if (current->id == id)
+            {
+                cout << "Enter new details for Medicine ID " << id << ":\n";
+                cout << "Enter Medicine Name: ";
+                cin.ignore();
+                getline(cin, current->name);
+                cout << "Enter Price: ";
+                cin >> current->price;
+                cout << "Enter Quantity: ";
+                cin >> current->quantity;
+                current->expiryDate = inputExpiryDate();
+                return true;
+            }
+            current = current->next;
+        }
+        return false;
+    }
+
+    void autoDeleteExpired(int currentMonth, int currentYear)
+    {
+        Medicine *current = front;
+        Medicine *prev = nullptr;
+        bool foundExpired = false;
+
+        while (current != nullptr)
         {
             string monthStr = current->expiryDate.substr(0, 2);
             string yearStr = current->expiryDate.substr(3, 4);
@@ -93,159 +389,62 @@ public:
 
             if (expiryYear < currentYear || (expiryYear == currentYear && expiryMonth < currentMonth))
             {
-                Medicine *toDelete = current;
-                if (current == front)
+                cout << RED << "Auto-deleted expired medicine: " << current->name
+                     << " (ID: " << current->id
+                     << ", Expiry: " << current->expiryDate << ")" << RESET << endl;
+
+                if (prev == nullptr)
                 {
-                    front = front->next;
-                    rear->next = front;
-                }
-                else if (current == rear)
-                {
-                    rear = prev;
-                    rear->next = front;
+                    front = current->next;
+                    if (front == nullptr)
+                        rear = nullptr;
                 }
                 else
                 {
                     prev->next = current->next;
+                    if (prev->next == nullptr)
+                        rear = prev;
                 }
 
-                cout << RED << "Deleted expired medicine: " << toDelete->name
-                     << " (ID: " << toDelete->id << ", Expiry: " << toDelete->expiryDate << ")" << RESET << endl;
-                delete toDelete;
+                Medicine *temp = current;
+                current = current->next;
+                delete temp;
                 count--;
-                expiredCount++;
-                current = prev ? prev->next : front;
+                foundExpired = true;
             }
             else
             {
                 prev = current;
                 current = current->next;
             }
-        } while (current != front);
+        }
 
-        if (expiredCount == 0)
+        if (!foundExpired)
+        {
             cout << GREEN << "No expired medicines found." << RESET << endl;
+        }
     }
 
-    // Displays all medicines in the queue
     void displayAll()
     {
-        if (isEmpty())
+        if (front == nullptr)
         {
-            cout << RED << "No medicines available." << RESET << endl;
+            cout << RED << "No medicines available to display." << RESET << endl;
             return;
         }
 
+        cout << "\n----------------------" << endl;
+        cout << GREEN << "   All Medicines:   " << RESET << endl;
+        cout << "----------------------\n" << endl;
+
+        printHeader();
+
         Medicine *current = front;
-
-        cout << CYAN << "\nAvailable Medicines:\n" << RESET;
-        cout << "---------------------------------------------------\n";
-        cout << setw(5) << "ID" << setw(20) << "Name"
-             << setw(10) << "Price" << setw(10) << "Qty"
-             << setw(15) << "Expiry Date" << endl;
-        cout << "---------------------------------------------------\n";
-
-        do
+        while (current != nullptr)
         {
-            cout << setw(5) << current->id
-                 << setw(20) << current->name
-                 << setw(10) << fixed << setprecision(2) << current->price
-                 << setw(10) << current->quantity
-                 << setw(15) << current->expiryDate << endl;
+            printMedicine(current);
             current = current->next;
-        } while (current != front);
-    }
-
-    // Search medicine by name
-    void searchByName(const string &name)
-    {
-        if (isEmpty())
-        {
-            cout << RED << "No medicines available." << RESET << endl;
-            return;
         }
-
-        Medicine *current = front;
-        bool found = false;
-
-        do
-        {
-            if (current->name == name)
-            {
-                cout << GREEN << "Medicine Found - ID: " << current->id << ", Expiry: " << current->expiryDate << RESET << endl;
-                found = true;
-                break;
-            }
-            current = current->next;
-        } while (current != front);
-
-        if (!found)
-            cout << RED << "Medicine not found!" << RESET << endl;
-    }
-
-    // Search medicine by ID
-    void searchById(int id)
-    {
-        if (isEmpty())
-        {
-            cout << RED << "No medicines available." << RESET << endl;
-            return;
-        }
-
-        Medicine *current = front;
-        bool found = false;
-
-        do
-        {
-            if (current->id == id)
-            {
-                cout << GREEN << "Medicine Found - Name: " << current->name << ", Expiry: " << current->expiryDate << RESET << endl;
-                found = true;
-                break;
-            }
-            current = current->next;
-        } while (current != front);
-
-        if (!found)
-            cout << RED << "Medicine not found!" << RESET << endl;
-    }
-
-    // Update medicine details by ID
-    void updateMedicine(int id)
-    {
-        if (isEmpty())
-        {
-            cout << RED << "No medicines available." << RESET << endl;
-            return;
-        }
-
-        Medicine *current = front;
-
-        do
-        {
-            if (current->id == id)
-            {
-                cout << "Enter new details for Medicine ID " << id << ":\n";
-                cout << "Enter Medicine Name: ";
-                cin.ignore();
-                getline(cin, current->name);
-
-                cout << "Enter Price: ";
-                cin >> current->price;
-
-                cout << "Enter Quantity: ";
-                cin >> current->quantity;
-
-                cout << "Enter Expiry Date (MM/YYYY): ";
-                cin >> current->expiryDate;
-
-                cout << GREEN << "Medicine details updated successfully!" << RESET << endl;
-                return;
-            }
-            current = current->next;
-        } while (current != front);
-
-        cout << RED << "Medicine not found!" << RESET << endl;
     }
 
     int getCount() const { return count; }
