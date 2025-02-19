@@ -4,16 +4,11 @@
 #include <limits>
 #include "head.cpp"
 
-// Define color constants
-#define GREEN "\033[32m"
-#define RED "\033[31m"
-#define CYAN "\033[36m"
-#define RESET "\033[0m"
-
 // Function to input expiry date
 using namespace std;
 
-string inputExpiryDate() {
+string inputExpiryDate()
+{
     string expiryDate;
     cout << "Enter Expiry Date (MM/YYYY): ";
     cin >> expiryDate;
@@ -39,7 +34,7 @@ int count = 0;
 void deleteAllMedicinesS()
 {
     MedicineS *current = top;
-    while (current != nullptr) 
+    while (current != nullptr)
     {
         MedicineS *next = current->next;
         delete current;
