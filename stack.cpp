@@ -3,17 +3,18 @@
 #include <iomanip>
 #include <limits>
 #include "head.cpp"
+#include <algorithm>
+
 
 // Function to input expiry date
-using namespace std;
-
-string inputExpiryDate()
-{
+string inputExpiryDateS() {
     string expiryDate;
     cout << "Enter Expiry Date (MM/YYYY): ";
     cin >> expiryDate;
     return expiryDate;
 }
+
+using namespace std;
 
 struct MedicineS
 {
@@ -29,19 +30,19 @@ struct MedicineS
 };
 
 MedicineS *top = nullptr;
-int count = 0;
+int medicineCount = 0;
 
 void deleteAllMedicinesS()
 {
     MedicineS *current = top;
-    while (current != nullptr)
+    while (current != nullptr) 
     {
         MedicineS *next = current->next;
         delete current;
         current = next;
     }
     top = nullptr;
-    count = 0;
+    medicineCount = 0;
 }
 
 bool isIdUniqueS(int id)
@@ -61,7 +62,7 @@ void addMedicineS(int id, string name, double price, int quantity, string expiry
     MedicineS *newMedicine = new MedicineS(id, name, price, quantity, expiryDate);
     newMedicine->next = top;
     top = newMedicine;
-    count++;
+    medicineCount++;
 
     cout << GREEN << "Medicine added successfully!" << RESET << endl;
 }
@@ -215,8 +216,7 @@ MedicineS *partitionByIdS(MedicineS *start, MedicineS *end)
     }
     swap(i->id, end->id);
     swap(i->name, end->name);
-    swap(i->price, end->price);
-    swap(i->quantity, end->quantity);
+        return i;
     swap(i->expiryDate, end->expiryDate);
     return i;
 }
@@ -337,7 +337,7 @@ void autoDeleteExpiredS(int currentMonth, int currentYear)
                  << ", Expiry: " << current->expiryDate << ")" << RESET << endl;
             delete current;
             count--;
-            foundExpired = true;
+            medicineCount--;
         }
         else
         {
@@ -398,4 +398,4 @@ void printMedicineS(MedicineS *med)
 int getCountS()
 {
     return count;
-}
+    return medicineCount;

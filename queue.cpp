@@ -28,12 +28,12 @@ void printHeaderQ()
          << setw(10) << "Price" << setw(10) << "Quantity"
          << setw(15) << "Expiry Date" << endl;
     cout << string(60, '-') << endl;
+    }
 }
 
-if (!found)
+void printNotFoundMessage(const string &name)
 {
     cout << "Medicine with name " << name << " not found." << endl;
-}
 }
 
 void printMedicineQ(Medicine *med)
@@ -56,6 +56,7 @@ bool isIdUniqueQ(int id)
     }
     return true;
 }
+}
 
 void addMedicineQ(int id, string name, double price, int quantity, string expiryDate)
 {
@@ -70,7 +71,7 @@ void addMedicineQ(int id, string name, double price, int quantity, string expiry
         rear->next = newMedicine;
         rear = newMedicine;
     }
-    count++;
+    ::count++;
 
     cout << "Medicine added successfully!" << endl;
 }
@@ -93,54 +94,60 @@ void searchByNameQ(const string &name)
         current = current->next;
     }
 
-    void searchByIdQ(int id)
+    if (!found)
     {
-        Medicine *current = front;
-        bool found = false;
+        printNotFoundMessage(name);
+    }
+}
 
-        cout << "\nSearch Results:" << endl;
-        printHeaderQ();
+void searchByIdQ(int id)
+{
+    Medicine *current = front;
+    bool found = false;
 
-        while (current != nullptr)
+    cout << "\nSearch Results:" << endl;
+    printHeaderQ();
+
+    while (current != nullptr)
+    {
+        if (current->id == id)
         {
-            if (current->id == id)
-            {
-                printMedicineQ(current);
-                found = true;
-                break;
-            }
-            current = current->next;
+            printMedicineQ(current);
+            found = true;
+            break;
         }
-
-        if (!found)
-        {
-            cout << "Medicine with ID " << id << " not found." << endl;
-        }
+        current = current->next;
     }
 
-    void searchByExpiryDateQ(const string &expiryDate)
+    if (!found)
     {
-        Medicine *current = front;
-        bool found = false;
-
-        cout << "\nSearch Results:" << endl;
-        printHeaderQ();
-
-        while (current != nullptr)
-        {
-            if (current->expiryDate == expiryDate)
-            {
-                printMedicineQ(current);
-                found = true;
-            }
-            current = current->next;
-        }
-
-        if (!found)
-        {
-            cout << "No medicines expiring in " << expiryDate << " found." << endl;
-        }
+        cout << "Medicine with ID " << id << " not found." << endl;
     }
+}
+
+void searchByExpiryDateQ(const string &expiryDate)
+{
+    Medicine *current = front;
+    bool found = false;
+
+    cout << "\nSearch Results:" << endl;
+    printHeaderQ();
+
+    while (current != nullptr)
+    {
+        if (current->expiryDate == expiryDate)
+        {
+            printMedicineQ(current);
+            found = true;
+        }
+        current = current->next;
+    }
+
+    if (!found)
+    {
+        cout << "No medicines expiring in " << expiryDate << " found." << endl;
+    }
+}
 
     void sortByNameQ()
     {
@@ -287,12 +294,14 @@ void searchByNameQ(const string &name)
                 }
                 else
                 {
-                    prev->next = current->next;
-                    if (prev->next == nullptr)
-                        rear = prev;
-                }
-
                 Medicine *temp = current;
+                current = current->next;
+                delete temp;
+                count--;
+                foundExpired = true;
+                foundExpired = true;
+
+                ::count--;
                 current = current->next;
                 delete temp;
                 count--;
@@ -310,6 +319,7 @@ void searchByNameQ(const string &name)
             cout << "No expired medicines found." << endl;
         }
     }
+}
 
     void displayAllQ()
     {
@@ -333,7 +343,7 @@ void searchByNameQ(const string &name)
             current = current->next;
         }
     }
-
+        return ::count;
     int getCountQ()
     {
         return count;

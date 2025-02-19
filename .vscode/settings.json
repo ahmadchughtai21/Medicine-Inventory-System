@@ -44,6 +44,14 @@
     "stdexcept": "cpp",
     "streambuf": "cpp",
     "typeinfo": "cpp",
-    "iomanip": "cpp"
+    "iomanip": "cpp",
+    "forward_list": "cpp",
+    "ios": "cpp",
+    "list": "cpp",
+    "optional": "cpp",
+    "xhash": "cpp",
+    "xiosbase": "cpp",
+    "xstring": "cpp",
+    "xlocale": "cpp"
   }
 }
