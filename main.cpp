@@ -76,9 +76,7 @@ int main()
 
             string expiryDate = inputExpiryDate();
 
-            addMedicineLink(newId, name, price, quantity, expiryDate);
-            addMedicineQ(newId, name, price, quantity, expiryDate);
-            addMedicineS(newId, name, price, quantity, expiryDate);
+            compareAddMedicines(newId, name, price, quantity, expiryDate);
             break;
         }
 
@@ -88,7 +86,7 @@ int main()
             cout << "Enter medicine name to search: ";
             cin.ignore();
             getline(cin, searchName);
-            medicineList.searchByName(searchName);
+            compareSearchByName(searchName);
             break;
         }
         case 3:
@@ -96,30 +94,30 @@ int main()
             int searchId;
             cout << "Enter medicine ID to search: ";
             cin >> searchId;
-            medicineList.searchById(searchId);
+            compareSearchById(searchId);
             break;
         }
 
         case 4:
         { // Search by Expiry Date
             string searchExpiry = inputExpiryDate();
-            medicineList.searchByExpiryDate(searchExpiry);
+            compareSearchByExpiryDate(searchExpiry);
             break;
         }
 
         case 5:
         { // Sort by Name
-            medicineList.sortByName();
+            compareSortByName();
             cout << GREEN << "Medicines sorted by name successfully!" << RESET << endl;
-            medicineList.displayAll(); // Show sorted results
+            compareDisplayAll(); // Show sorted results
             break;
         }
 
         case 6:
         { // Sort by ID
-            medicineList.sortById();
+            compareSortById();
             cout << GREEN << "Medicines sorted by ID successfully!" << RESET << endl;
-            medicineList.displayAll(); // Show sorted results
+            compareDisplayAll(); // Show sorted results
             break;
         }
 

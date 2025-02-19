@@ -5,110 +5,129 @@
 using namespace std;
 
 // Function to measure execution time (supports functions with parameters)
-double measureExecutionTime(std::function<void()> func) {
+double measureExecutionTime(std::function<void()> func)
+{
     auto start = std::chrono::high_resolution_clock::now(); // Start time
-    func(); // Execute the function
-    auto end = std::chrono::high_resolution_clock::now(); // End time
+    func();                                                 // Execute the function
+    auto end = std::chrono::high_resolution_clock::now();   // End time
 
     std::chrono::duration<double, std::milli> duration = end - start; // Compute duration in milliseconds
     return duration.count();
 }
 
-// Example function to test
-void exampleFunction(int n)
+void compareAddMedicines(int id, string name, double price, int quantity, string expiryDate)
 {
-    for (int i = 0; i < n; i++)
-        ; // Simulated work
-}
+    int newId = id;
+    int quantity1 = quantity;
+    string name1 = name;
+    double price1 = price;
+    string expiryDate1 = expiryDate;
 
-void compareViewMedicines()
-{
-    double timeTaken = measureExecutionTime([&]() { exampleFunction(99999); });
+    double timeTaken = measureExecutionTime([&]()
+                                            { addMedicineLink(newId, name1, price1, quantity1, expiryDate1); });
     cout << "Execution Time: " << timeTaken << " ms" << endl;
+
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { addMedicineQ(newId, name1, price1, quantity1, expiryDate1); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
+
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { addMedicineS(newId, name1, price1, quantity1, expiryDate1); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
 
-void compareAddMedicine(string name, double price, int quantity, string expiryDate, string manufacturingDate, string description)
+void compareSearchByName(string searchName)
 {
-    // linkedListAddMedicine(name, price, quantity, expiryDate, manufacturingDate, description);
+    string searchName1 = searchName;
+
+    double timeTaken = measureExecutionTime([&]()
+                                            { searchByNameLink(searchName1); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
+
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { searchByNameQ(searchName1); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
+
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { searchByNameS(searchName1); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
 
-void compareDeleteMedicine(string name)
+void compareSearchById(int searchId)
 {
-    // linkedListDeleteMedicine();
-}
+    int searchId1 = searchId;
 
-// search for a medicine
+    double timeTaken = measureExecutionTime([&]()
+                                            { searchByIdLink(searchId1); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
 
-void compareSearchByName(string name)
-{
-    // linkedListSearchByName(name);
-}
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { searchByIdQ(searchId1); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
 
-void compareSearchByPrice(double price)
-{
-    // linkedListSearchByPrice(price);
-}
-
-void compareSearchByQuantity(int quantity)
-{
-    // linkedListSearchByQuantity(quantity);
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { searchByIdS(searchId1); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
 
 void compareSearchByExpiryDate(string expiryDate)
 {
-    // linkedListSearchByExpiryDate(expiryDate);
-}
+    string expiryDate1 = expiryDate;
 
-void compareSearchByManufacturingDate(string manufacturingDate)
-{
-    // linkedListSearchByManufacturingDate(manufacturingDate);
-}
+    double timeTaken = measureExecutionTime([&]()
+                                            { searchByExpiryDateLink(expiryDate1); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
 
-void compareViewLowStockMedicines()
-{
-    // linkedListViewLowStockMedicines();
-}
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { searchByExpiryDateQ(expiryDate1); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
 
-void compareViewOutOfStockMedicines()
-{
-    // linkedListViewExpiredMedicines();
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { searchByExpiryDateS(expiryDate1); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
-
-// sort medicines
 
 void compareSortByName()
 {
-    // linkedListSortByName();
+    double timeTaken = measureExecutionTime([&]()
+                                            { sortByNameLink(); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
+
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { sortByNameQ(); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
+
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { sortByNameS(); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
 
-void compareSortByPrice()
+void compareDisplayAll()
 {
-    // linkedListSortByPrice();
+    double timeTaken = measureExecutionTime([&]()
+                                            { displayAllLink(); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
+
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { displayAllQ(); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
+
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { displayAllS(); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
 
-void compareSortByQuantity()
+void compareSortById()
 {
-    // linkedListSortByQuantity();
-}
+    double timeTaken = measureExecutionTime([&]()
+                                            { sortByIdLink(); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
 
-void compareSortByExpiryDate()
-{
-    // linkedListSortByExpiryDate();
-}
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { sortByIdQ(); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
 
-void compareSortByManufacturingDate()
-{
-    // linkedListSortByManufacturingDate();
-}
-
-// expiry alerts
-
-void compareViewExpiringMedicines()
-{
-    // linkedListExpiringMedicines();
-}
-
-void compareViewExpiredMedicines()
-{
-    // linkedListExpiredMedicines();
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { sortByIdS(); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
