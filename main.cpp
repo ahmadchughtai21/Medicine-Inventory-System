@@ -123,22 +123,22 @@ int main()
 
         case 7:
         { // Sort by Expiry Date
-            medicineList.sortByExpiryDate();
+            compareSortByExpiryDate();
             cout << GREEN << "Medicines sorted by expiry date successfully!" << RESET << endl;
-            medicineList.displayAll(); // Show sorted results
+            compareDisplayAll(); // Show sorted results
             break;
         }
 
         case 8:
         { // Display All Medicines
-            medicineList.displayAll();
+            compareDisplayAll();
             break;
         }
 
         case 9:
         { // Update Medicine
             // Check if there are any medicines to update
-            if (medicineList.getCount() == 0)
+            if (compareGetCount() == 0)
             {
                 cout << RED << "No medicines available to update." << RESET << endl;
                 break;
@@ -170,7 +170,7 @@ int main()
         case 10:
         { // Auto-Delete Expired Medicines
             // Check if there are any medicines to check
-            if (medicineList.getCount() == 0)
+            if (getCountLink() == 0)
             {
                 cout << RED << "No medicines in the system." << RESET << endl;
                 break;
@@ -185,7 +185,7 @@ int main()
 
             // Process deletion of expired medicines
             cout << YELLOW << "\nChecking for expired medicines..." << RESET << endl;
-            medicineList.autoDeleteExpired(currentMonth, currentYear);
+            compareAutoDeleteExpired(currentMonth, currentYear);
             break;
         }
 

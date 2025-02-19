@@ -407,7 +407,7 @@ void removeNodeLink(MedicineL *node)
     count--;
 }
 
-int getCount()
+int getCountLink()
 {
     return count;
 }

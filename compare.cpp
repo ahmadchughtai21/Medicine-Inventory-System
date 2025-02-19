@@ -131,3 +131,51 @@ void compareSortById()
                                              { sortByIdS(); });
     cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
+
+void compareSortByExpiryDate()
+{
+    double timeTaken = measureExecutionTime([&]()
+                                            { sortByExpiryDateLink(); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
+
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { sortByExpiryDateQ(); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
+
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { sortByExpiryDateS(); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
+}
+
+void compareGetCount()
+{
+    double timeTaken = measureExecutionTime([&]()
+                                            { getCountLink(); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
+
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { getCountQ(); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
+
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { getCountS(); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
+}
+
+void compareAutoDeleteExpired(int currentMonth, int currentYear)
+{
+    int currentMonth1 = currentMonth;
+    int currentYear1 = currentYear;
+
+    double timeTaken = measureExecutionTime([&]()
+                                            { autoDeleteExpiredLink(currentMonth1, currentYear1); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
+
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { autoDeleteExpiredQ(currentMonth1, currentYear1); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
+
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { autoDeleteExpiredS(currentMonth1, currentYear1); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
+}
