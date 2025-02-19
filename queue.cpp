@@ -59,7 +59,7 @@ public:
         return true;
     }
 
-    void addMedicine(int id, string name, double price, int quantity, string expiryDate)
+    void addMedicineq(int id, string name, double price, int quantity, string expiryDate)
     {
         Medicine *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
 
@@ -77,7 +77,7 @@ public:
         cout << GREEN << "Medicine added successfully!" << RESET << endl;
     }
 
-    void searchByName(const string &name)
+    void searchByNameq(const string &name)
     {
         Medicine *current = front;
         bool found = false;
@@ -102,7 +102,7 @@ public:
         }
     }
 
-    void searchById(int id)
+    void searchByIdq(int id)
     {
         Medicine *current = front;
         bool found = false;
@@ -128,7 +128,7 @@ public:
         }
     }
 
-    void searchByExpiryDate(const string &expiryDate)
+    void searchByExpiryDateq(const string &expiryDate)
     {
         Medicine *current = front;
         bool found = false;
@@ -153,7 +153,7 @@ public:
         }
     }
 
-    void sortByName()
+    void sortByNameq()
     {
         if (front == nullptr || front->next == nullptr)
             return;
@@ -184,7 +184,7 @@ public:
         } while (swapped);
     }
 
-    void sortById()
+    void sortByIdq()
     {
         if (front == nullptr || front->next == nullptr)
             return;
@@ -215,7 +215,7 @@ public:
         } while (swapped);
     }
 
-    void sortByExpiryDate()
+    void sortByExpiryDateq()
     {
         if (front == nullptr || front->next == nullptr)
             return;
@@ -246,7 +246,7 @@ public:
         } while (swapped);
     }
 
-    bool updateMedicine(int id)
+    bool updateMedicineq(int id)
     {
         Medicine *current = front;
 
@@ -270,7 +270,7 @@ public:
         return false;
     }
 
-    void autoDeleteExpired(int currentMonth, int currentYear)
+    void autoDeleteExpiredq(int currentMonth, int currentYear)
     {
         Medicine *current = front;
         Medicine *prev = nullptr;
@@ -321,7 +321,7 @@ public:
         }
     }
 
-    void displayAll()
+    void displayAllq()
     {
         if (front == nullptr)
         {
