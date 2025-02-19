@@ -2,7 +2,7 @@
 #include <string>
 #include <iomanip>
 #include <limits>
-#include "head.cpp"
+#include "head.h"
 using namespace std;
 
 struct MedicineQ
