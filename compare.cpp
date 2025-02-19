@@ -179,3 +179,20 @@ void compareAutoDeleteExpired(int currentMonth, int currentYear)
                                              { autoDeleteExpiredS(currentMonth1, currentYear1); });
     cout << "Execution Time: " << timeTaken2 << " ms" << endl;
 }
+
+void compareUpdateMedicine(int id)
+{
+    int id1 = id;
+
+    double timeTaken = measureExecutionTime([&]()
+                                            { updateMedicineLink(id1); });
+    cout << "Execution Time: " << timeTaken << " ms" << endl;
+
+    double timeTaken1 = measureExecutionTime([&]()
+                                             { updateMedicineQ(id1); });
+    cout << "Execution Time: " << timeTaken1 << " ms" << endl;
+
+    double timeTaken2 = measureExecutionTime([&]()
+                                             { updateMedicineS(id1); });
+    cout << "Execution Time: " << timeTaken2 << " ms" << endl;
+}

@@ -138,7 +138,7 @@ int main()
         case 9:
         { // Update Medicine
             // Check if there are any medicines to update
-            if (compareGetCount() == 0)
+            if (getCountLink() == 0)
             {
                 cout << RED << "No medicines available to update." << RESET << endl;
                 break;
@@ -156,7 +156,7 @@ int main()
             }
 
             // Attempt to update medicine
-            if (medicineList.updateMedicine(updateId))
+            if (updateMedicineLink(updateId))
             {
                 cout << GREEN << "Medicine updated successfully!" << RESET << endl;
             }
