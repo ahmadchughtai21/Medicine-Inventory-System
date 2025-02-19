@@ -21,7 +21,7 @@ struct MedicineL {
 
 MedicineL* head = nullptr;
 MedicineL* tail = nullptr;
-int count = 0;
+int medicineCount = 0;
 
 void deleteAllMedicines() {
     MedicineL *current = head;
@@ -31,7 +31,7 @@ void deleteAllMedicines() {
         current = next;
     }
     head = tail = nullptr;
-    count = 0;
+    medicineCount = 0;
 }
 
 bool isIdUniqueLink(int id) {
@@ -54,7 +54,7 @@ void addMedicineLink(int id, string name, double price, int quantity, string exp
         newMedicine->prev = tail;
         tail = newMedicine;
     }
-    count++;
+    medicineCount++;
 
     cout << "Medicine added successfully!" << endl;
 }
@@ -348,9 +348,9 @@ void removeNodeLink(MedicineL *node) {
          << ", Expiry: " << node->expiryDate << ")" << endl;
 
     delete node;
-    count--;
+    medicineCount--;
 }
 
-int getCount() {
-    return count;
+int getCountLink() {
+    return medicineCount;
 }

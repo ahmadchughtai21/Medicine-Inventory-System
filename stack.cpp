@@ -397,5 +397,6 @@ void printMedicineS(MedicineS *med)
 
 int getCountS()
 {
-    return count;
+
     return medicineCount;
+}

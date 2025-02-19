@@ -5,22 +5,22 @@
 #include "head.cpp"
 using namespace std;
 
-struct Medicine
+struct MedicineQ
 {
     int id;
     string name;
     double price;
     int quantity;
     string expiryDate;
-    Medicine *next;
+    MedicineQ *next;
 
-    Medicine(int id, string name, double price, int quantity, string expiryDate)
+    MedicineQ(int id, string name, double price, int quantity, string expiryDate)
         : id(id), name(name), price(price), quantity(quantity), expiryDate(expiryDate), next(nullptr) {}
 };
 
-Medicine *front = nullptr;
-Medicine *rear = nullptr;
-int count = 0;
+MedicineQ *front = nullptr;
+MedicineQ *rear = nullptr;
+int ::count = 0;
 
 void printHeaderQ()
 {
@@ -28,7 +28,7 @@ void printHeaderQ()
          << setw(10) << "Price" << setw(10) << "Quantity"
          << setw(15) << "Expiry Date" << endl;
     cout << string(60, '-') << endl;
-    }
+    
 }
 
 void printNotFoundMessage(const string &name)
@@ -36,7 +36,7 @@ void printNotFoundMessage(const string &name)
     cout << "Medicine with name " << name << " not found." << endl;
 }
 
-void printMedicineQ(Medicine *med)
+void printMedicineQ(MedicineQ *med)
 {
     cout << setw(5) << med->id
          << setw(20) << med->name
@@ -47,7 +47,7 @@ void printMedicineQ(Medicine *med)
 
 bool isIdUniqueQ(int id)
 {
-    Medicine *current = front;
+    MedicineQ *current = front;
     while (current != nullptr)
     {
         if (current->id == id)
@@ -56,11 +56,11 @@ bool isIdUniqueQ(int id)
     }
     return true;
 }
-}
+
 
 void addMedicineQ(int id, string name, double price, int quantity, string expiryDate)
 {
-    Medicine *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
+    MedicineQ *newMedicine = new MedicineQ(id, name, price, quantity, expiryDate);
 
     if (rear == nullptr)
     {
@@ -78,7 +78,7 @@ void addMedicineQ(int id, string name, double price, int quantity, string expiry
 
 void searchByNameQ(const string &name)
 {
-    Medicine *current = front;
+    MedicineQ *current = front;
     bool found = false;
 
     cout << "\nSearch Results:" << endl;
@@ -102,7 +102,7 @@ void searchByNameQ(const string &name)
 
 void searchByIdQ(int id)
 {
-    Medicine *current = front;
+    MedicineQ *current = front;
     bool found = false;
 
     cout << "\nSearch Results:" << endl;
@@ -127,7 +127,7 @@ void searchByIdQ(int id)
 
 void searchByExpiryDateQ(const string &expiryDate)
 {
-    Medicine *current = front;
+    MedicineQ *current = front;
     bool found = false;
 
     cout << "\nSearch Results:" << endl;
@@ -155,8 +155,8 @@ void searchByExpiryDateQ(const string &expiryDate)
             return;
 
         bool swapped;
-        Medicine *ptr1;
-        Medicine *lptr = nullptr;
+        MedicineQ *ptr1;
+        MedicineQ *lptr = nullptr;
 
         do
         {
@@ -186,8 +186,8 @@ void searchByExpiryDateQ(const string &expiryDate)
             return;
 
         bool swapped;
-        Medicine *ptr1;
-        Medicine *lptr = nullptr;
+        MedicineQ *ptr1;
+        MedicineQ *lptr = nullptr;
 
         do
         {
@@ -217,8 +217,8 @@ void searchByExpiryDateQ(const string &expiryDate)
             return;
 
         bool swapped;
-        Medicine *ptr1;
-        Medicine *lptr = nullptr;
+        MedicineQ *ptr1;
+        MedicineQ *lptr = nullptr;
 
         do
         {
@@ -244,7 +244,7 @@ void searchByExpiryDateQ(const string &expiryDate)
 
     bool updateMedicineQ(int id)
     {
-        Medicine *current = front;
+        MedicineQ *current = front;
 
         while (current != nullptr)
         {
@@ -269,8 +269,8 @@ void searchByExpiryDateQ(const string &expiryDate)
 
     void autoDeleteExpiredQ(int currentMonth, int currentYear)
     {
-        Medicine *current = front;
-        Medicine *prev = nullptr;
+        MedicineQ *current = front;
+        MedicineQ *prev = nullptr;
         bool foundExpired = false;
 
         while (current != nullptr)
@@ -294,10 +294,10 @@ void searchByExpiryDateQ(const string &expiryDate)
                 }
                 else
                 {
-                Medicine *temp = current;
+                MedicineQ *temp = current;
                 current = current->next;
                 delete temp;
-                count--;
+                ::count--;
                 foundExpired = true;
                 foundExpired = true;
 
@@ -336,15 +336,15 @@ void searchByExpiryDateQ(const string &expiryDate)
 
         printHeaderQ();
 
-        Medicine *current = front;
+        MedicineQ *current = front;
         while (current != nullptr)
         {
             printMedicineQ(current);
             current = current->next;
         }
     }
-        return ::count;
+
     int getCountQ()
     {
-        return count;
+        return ::count;
     }
