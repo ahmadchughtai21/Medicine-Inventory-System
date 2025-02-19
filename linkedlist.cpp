@@ -23,7 +23,7 @@ MedicineL* head = nullptr;
 MedicineL* tail = nullptr;
 int medicineCount = 0;
 
-void deleteAllMedicines() {
+void deleteAllMedicinesLink() {
     MedicineL *current = head;
     while (current != nullptr) {
         MedicineL *next = current->next;
@@ -120,14 +120,14 @@ void searchByExpiryDateLink(const string &expiryDate) {
     }
 }
 
-MedicineL *getLastNode(MedicineL *node) {
+MedicineL *getLastNodeLink(MedicineL *node) {
     while (node && node->next) {
         node = node->next;
     }
     return node;
 }
 
-MedicineL *partitionByName(MedicineL *low, MedicineL *high) {
+MedicineL *partitionByNameLink(MedicineL *low, MedicineL *high) {
     string pivot = high->name;
     MedicineL *i = low->prev;
 
@@ -148,7 +148,7 @@ MedicineL *partitionByName(MedicineL *low, MedicineL *high) {
 
 void quickSortByNameLink(MedicineL *low, MedicineL *high) {
     if (low && high && low != high && low != high->next) {
-        MedicineL *pivot = partitionByName(low, high);
+        MedicineL *pivot = partitionByNameLink(low, high);
         quickSortByNameLink(low, pivot->prev);
         quickSortByNameLink(pivot->next, high);
     }
@@ -157,10 +157,10 @@ void quickSortByNameLink(MedicineL *low, MedicineL *high) {
 void sortByNameLink() {
     if (head == nullptr || head->next == nullptr)
         return;
-    quickSortByNameLink(head, getLastNode(head));
+    quickSortByNameLink(head, getLastNodeLink(head));
 }
 
-MedicineL *partitionById(MedicineL *low, MedicineL *high) {
+MedicineL *partitionByIdLink(MedicineL *low, MedicineL *high) {
     int pivot = high->id;
     MedicineL *i = low->prev;
 
@@ -181,18 +181,18 @@ MedicineL *partitionById(MedicineL *low, MedicineL *high) {
 
 void quickSortByIdLink(MedicineL *low, MedicineL *high) {
     if (low && high && low != high && low != high->next) {
-        MedicineL *pivot = partitionById(low, high);
+        MedicineL *pivot = partitionByIdLink(low, high);
         quickSortByIdLink(low, pivot->prev);
         quickSortByIdLink(pivot->next, high);
     }
 }
-void sortById() {
+void sortByIdLink() {
     if (head == nullptr || head->next == nullptr)
         return;
-    quickSortByIdLink(head, getLastNode(head));
+    quickSortByIdLink(head, getLastNodeLink(head));
 }
 
-MedicineL *partitionByExpiryDate(MedicineL *low, MedicineL *high) {
+MedicineL *partitionByExpiryDateLink(MedicineL *low, MedicineL *high) {
     string pivot = high->expiryDate;
     MedicineL *i = low->prev;
 
@@ -213,7 +213,7 @@ MedicineL *partitionByExpiryDate(MedicineL *low, MedicineL *high) {
 
 void quickSortByExpiryDateLink(MedicineL *low, MedicineL *high) {
     if (low && high && low != high && low != high->next) {
-        MedicineL *pivot = partitionByExpiryDate(low, high);
+        MedicineL *pivot = partitionByExpiryDateLink(low, high);
         quickSortByExpiryDateLink(low, pivot->prev);
         quickSortByExpiryDateLink(pivot->next, high);
     }
@@ -222,7 +222,7 @@ void quickSortByExpiryDateLink(MedicineL *low, MedicineL *high) {
 void sortByExpiryDateLink() {
     if (head == nullptr || head->next == nullptr)
         return;
-    quickSortByExpiryDateLink(head, getLastNode(head));
+    quickSortByExpiryDateLink(head, getLastNodeLink(head));
 }
 
 bool updateMedicineLink(int id) {
