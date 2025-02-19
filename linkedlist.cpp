@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 /**
  * Main class for medicine management
  * Implements a doubly linked list for storing and managing medicine data
@@ -34,7 +33,7 @@ public:
     }
 
     // Verifies that medicine ID is unique in the list
-    bool isIdUnique(int id)
+    bool isIdUniqueLink(int id)
     {
         Medicine *current = head;
         while (current != nullptr)
@@ -50,7 +49,7 @@ public:
      * Adds new medicine to the doubly linked list
      * Maintains the list structure with proper linking
      */
-    void addMedicine(int id, string name, double price, int quantity, string expiryDate)
+    void addMedicineLink(int id, string name, double price, int quantity, string expiryDate)
     {
         Medicine *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
 
@@ -70,20 +69,20 @@ public:
     }
 
     // Search functions with formatted output
-    void searchByName(const string &name)
+    void searchByNameLink(const string &name)
     {
         Medicine *current = head;
         bool found = false;
 
         cout << "\n"
              << CYAN << "Search Results:" << RESET << endl;
-        printHeader();
+        printHeaderLink();
 
         while (current != nullptr)
         {
             if (current->name == name)
             {
-                printMedicine(current);
+                printMedicineLink(current);
                 found = true;
             }
             current = current->next;
@@ -95,20 +94,20 @@ public:
         }
     }
 
-    void searchById(int id)
+    void searchByIdLink(int id)
     {
         Medicine *current = head;
         bool found = false;
 
         cout << "\n"
              << CYAN << "Search Results:" << RESET << endl;
-        printHeader();
+        printHeaderLink();
 
         while (current != nullptr)
         {
             if (current->id == id)
             {
-                printMedicine(current);
+                printMedicineLink(current);
                 found = true;
                 break;
             }
@@ -121,20 +120,20 @@ public:
         }
     }
 
-    void searchByExpiryDate(const string &expiryDate)
+    void searchByExpiryDateLink(const string &expiryDate)
     {
         Medicine *current = head;
         bool found = false;
 
         cout << "\n"
              << CYAN << "Search Results:" << RESET << endl;
-        printHeader();
+        printHeaderLink();
 
         while (current != nullptr)
         {
             if (current->expiryDate == expiryDate)
             {
-                printMedicine(current);
+                printMedicineLink(current);
                 found = true;
             }
             current = current->next;
@@ -179,21 +178,21 @@ public:
         return i;
     }
 
-    void quickSortByName(Medicine *low, Medicine *high)
+    void quickSortByNameLink(Medicine *low, Medicine *high)
     {
         if (low && high && low != high && low != high->next)
         {
             Medicine *pivot = partitionByName(low, high);
-            quickSortByName(low, pivot->prev);
-            quickSortByName(pivot->next, high);
+            quickSortByNameLink(low, pivot->prev);
+            quickSortByNameLink(pivot->next, high);
         }
     }
 
-    void sortByName()
+    void sortByNameLink()
     {
         if (head == nullptr || head->next == nullptr)
             return;
-        quickSortByName(head, getLastNode(head));
+        quickSortByNameLink(head, getLastNode(head));
     }
 
     // Partition function for QuickSort (Sorting by ID)
@@ -219,13 +218,13 @@ public:
         return i;
     }
 
-    void quickSortById(Medicine *low, Medicine *high)
+    void quickSortByIdLink(Medicine *low, Medicine *high)
     {
         if (low && high && low != high && low != high->next)
         {
             Medicine *pivot = partitionById(low, high);
-            quickSortById(low, pivot->prev);
-            quickSortById(pivot->next, high);
+            quickSortByIdLink(low, pivot->prev);
+            quickSortByIdLink(pivot->next, high);
         }
     }
 
@@ -233,7 +232,7 @@ public:
     {
         if (head == nullptr || head->next == nullptr)
             return;
-        quickSortById(head, getLastNode(head));
+        quickSortByIdLink(head, getLastNode(head));
     }
 
     // Partition function for QuickSort (Sorting by Expiry Date)
@@ -259,28 +258,28 @@ public:
         return i;
     }
 
-    void quickSortByExpiryDate(Medicine *low, Medicine *high)
+    void quickSortByExpiryDateLink(Medicine *low, Medicine *high)
     {
         if (low && high && low != high && low != high->next)
         {
             Medicine *pivot = partitionByExpiryDate(low, high);
-            quickSortByExpiryDate(low, pivot->prev);
-            quickSortByExpiryDate(pivot->next, high);
+            quickSortByExpiryDateLink(low, pivot->prev);
+            quickSortByExpiryDateLink(pivot->next, high);
         }
     }
 
-    void sortByExpiryDate()
+    void sortByExpiryDateLink()
     {
         if (head == nullptr || head->next == nullptr)
             return;
-        quickSortByExpiryDate(head, getLastNode(head));
+        quickSortByExpiryDateLink(head, getLastNode(head));
     }
 
     /**
      * Updates medicine details in the doubly linked list
      * Returns true if medicine was found and updated
      */
-    bool updateMedicine(int id)
+    bool updateMedicineLink(int id)
     {
         Medicine *current = head;
 
@@ -313,7 +312,7 @@ public:
      * Automatically removes expired medicines based on current date
      * Updates the doubly linked list structure
      */
-    void autoDeleteExpired(int currentMonth, int currentYear)
+    void autoDeleteExpiredLink(int currentMonth, int currentYear)
     {
         Medicine *current = head;
         bool foundExpired = false;
@@ -330,7 +329,7 @@ public:
 
             if (expiryYear < currentYear || (expiryYear == currentYear && expiryMonth < currentMonth))
             {
-                removeNode(toDelete);
+                removeNodeLink(toDelete);
                 foundExpired = true;
             }
         }
@@ -341,7 +340,7 @@ public:
         }
     }
 
-    void displayAll()
+    void displayAllLink()
     {
         if (head == nullptr)
         {
@@ -354,19 +353,19 @@ public:
         cout << "----------------------\n"
              << endl;
 
-        printHeader();
+        printHeaderLink();
 
         Medicine *current = head;
         while (current != nullptr)
         {
-            printMedicine(current);
+            printMedicineLink(current);
             current = current->next;
         }
     }
 
 private:
     // Helper functions for displaying medicine information
-    void printHeader()
+    void printHeaderLink()
     {
         cout << setw(5) << "ID" << setw(20) << "Name"
              << setw(10) << "Price" << setw(10) << "Quantity"
@@ -374,7 +373,7 @@ private:
         cout << string(60, '-') << endl;
     }
 
-    void printMedicine(Medicine *med)
+    void printMedicineLink(Medicine *med)
     {
         cout << setw(5) << med->id
              << setw(20) << med->name
@@ -387,7 +386,7 @@ private:
      * Swaps two adjacent nodes in the doubly linked list
      * Updates head/tail pointers if necessary
      */
-    void swapNodes(Medicine *a, Medicine *b)
+    void swapNodesLink(Medicine *a, Medicine *b)
     {
         if (a == b)
             return;
@@ -415,7 +414,7 @@ private:
      * Removes a node from the linked list and deletes it
      * Updates count and displays deletion message
      */
-    void removeNode(Medicine *node)
+    void removeNodeLink(Medicine *node)
     {
         if (node->prev)
             node->prev->next = node->next;
