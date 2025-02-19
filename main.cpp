@@ -7,430 +7,210 @@
 
 using namespace std;
 
-void manageMedicinesMenu();
-void viewMedicines();
-void addMedicine();
-void deleteMedicine();
-void updateMedicine();
-void searchMedicinesMenu();
-void searchByName();
-void searchByPrice();
-void searchByQuantity();
-void searchByExpiryDate();
-void searchByManufacturingDate();
-void stockManagementMenu();
-void viewLowStockMedicines();
-void viewOutOfStockMedicines();
-void sortMedicinesMenu();
-void sortByName();
-void sortByPrice();
-void sortByQuantity();
-void sortByExpiryDate();
-void sortByManufacturingDate();
-void expiryAlertsMenu();
-void viewExpiringMedicines();
-void viewExpiredMedicines();
-
+// Main program with menu-driven interface
 int main()
 {
-    cout << "Welcome to Medicines Inventory System" << endl;
-    cout << "Please select an option" << endl;
+    MedicineListStack medicineList;
+    int choice;
 
-    cout << "1. Manage Medicines" << endl;
-    cout << "2. Search Medicines" << endl;
-    cout << "3. Stock Management" << endl;
-    cout << "4. Sort Medicines" << endl;
-    cout << "5. Expiry Alerts" << endl;
-    cout << "6. Generate Reports" << endl;
-    cout << "7. Exit" << endl;
+    cout << "\n"
+         << "=============================================" << endl;
+    cout << GREEN << "    Welcome To Medicine Management System" << RESET << endl;
+    cout << "=============================================" << endl;
 
-    cout << "Enter option: ";
-    int option;
-    cin >> option;
-
-    switch (option)
+    do
     {
-    case 1:
-        manageMedicinesMenu();
-        break;
-    case 2:
-        searchMedicinesMenu();
-        break;
-    case 3:
-        stockManagementMenu();
-        break;
-    case 4:
-        sortMedicinesMenu();
-        break;
-    case 5:
-        expiryAlertsMenu();
-        break;
-    case 6:
-        // generateReportsMenu();
-        break;
-    case 7:
-        cout << "Exiting..." << endl;
-        break;
-    default:
-        cout << "Invalid option! Try Again" << endl;
-        main();
-    }
+        // Display menu options
+        cout << "\n-----------------------------------" << endl;
+        cout << CYAN << "    Medicine Management System" << RESET << endl;
+        cout << "-----------------------------------\n"
+             << endl;
+        cout << "1. Add Medicine\n";
+        cout << "2. Search by Name\n";
+        cout << "3. Search by ID\n";
+        cout << "4. Search by Expiry Date\n";
+        cout << "5. Sort by Name\n";
+        cout << "6. Sort by ID\n";
+        cout << "7. Sort by Expiry Date\n";
+        cout << "8. Display All Medicines\n";
+        cout << "9. Update Medicine\n";
+        cout << "10. Auto-Delete Expired\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+
+        // Input validation for menu choice
+        if (!(cin >> choice))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << RED << "Invalid input! Please enter a number." << RESET << endl;
+            continue;
+        }
+
+        // Process user choice
+        switch (choice)
+        {
+        case 1:
+        { // Add Medicine
+            int newId;
+            cout << "Enter medicine ID: ";
+            if (!(cin >> newId))
+            {
+                cout << RED << "Invalid ID! Please enter a number." << RESET << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
+
+            if (!medicineList.isIdUnique(newId))
+            {
+                cout << RED << "ID already exists! Please use a unique ID." << RESET << endl;
+                continue;
+            }
+
+            string name;
+            cout << "Enter medicine name: ";
+            cin.ignore();
+            getline(cin, name);
+
+            double price;
+            cout << "Enter medicine price: ";
+            cin >> price;
+
+            int quantity;
+            cout << "Enter medicine quantity: ";
+            cin >> quantity;
+
+            string expiryDate = inputExpiryDate();
+
+            medicineList.addMedicine(newId, name, price, quantity, expiryDate);
+            break;
+        }
+
+        case 2:
+        { // Search by Name
+            string searchName;
+            cout << "Enter medicine name to search: ";
+            cin.ignore();
+            getline(cin, searchName);
+            medicineList.searchByName(searchName);
+            break;
+        }
+        case 3:
+        { // Search by ID
+            int searchId;
+            cout << "Enter medicine ID to search: ";
+            cin >> searchId;
+            medicineList.searchById(searchId);
+            break;
+        }
+
+        case 4:
+        { // Search by Expiry Date
+            string searchExpiry = inputExpiryDate();
+            medicineList.searchByExpiryDate(searchExpiry);
+            break;
+        }
+
+        case 5:
+        { // Sort by Name
+            medicineList.sortByName();
+            cout << GREEN << "Medicines sorted by name successfully!" << RESET << endl;
+            medicineList.displayAll(); // Show sorted results
+            break;
+        }
+
+        case 6:
+        { // Sort by ID
+            medicineList.sortById();
+            cout << GREEN << "Medicines sorted by ID successfully!" << RESET << endl;
+            medicineList.displayAll(); // Show sorted results
+            break;
+        }
+
+        case 7:
+        { // Sort by Expiry Date
+            medicineList.sortByExpiryDate();
+            cout << GREEN << "Medicines sorted by expiry date successfully!" << RESET << endl;
+            medicineList.displayAll(); // Show sorted results
+            break;
+        }
+
+        case 8:
+        { // Display All Medicines
+            medicineList.displayAll();
+            break;
+        }
+
+        case 9:
+        { // Update Medicine
+            // Check if there are any medicines to update
+            if (medicineList.getCount() == 0)
+            {
+                cout << RED << "No medicines available to update." << RESET << endl;
+                break;
+            }
+
+            // Get and validate medicine ID
+            int updateId;
+            cout << "Enter Medicine ID to update: ";
+            if (!(cin >> updateId))
+            {
+                cout << RED << "Invalid ID format!" << RESET << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                break;
+            }
+
+            // Attempt to update medicine
+            if (medicineList.updateMedicine(updateId))
+            {
+                cout << GREEN << "Medicine updated successfully!" << RESET << endl;
+            }
+            else
+            {
+                cout << RED << "Medicine with ID " << updateId << " not found." << RESET << endl;
+            }
+            break;
+        }
+
+        case 10:
+        { // Auto-Delete Expired Medicines
+            // Check if there are any medicines to check
+            if (medicineList.getCount() == 0)
+            {
+                cout << RED << "No medicines in the system." << RESET << endl;
+                break;
+            }
+
+            // Get and validate current date
+            int currentMonth, currentYear;
+            if (!getCurrentDate(currentMonth, currentYear))
+            {
+                break;
+            }
+
+            // Process deletion of expired medicines
+            cout << YELLOW << "\nChecking for expired medicines..." << RESET << endl;
+            medicineList.autoDeleteExpired(currentMonth, currentYear);
+            break;
+        }
+
+        case 0:
+        { // Exit Program
+            cout << "\n=========================================================" << endl;
+            cout << GREEN << "   Thank you for using the Medicine Management System" << RESET << endl;
+            cout << "=========================================================" << endl;
+            break;
+        }
+
+        default:
+        { // Invalid Choice
+            cout << RED << "Invalid choice! Please enter a number between 0 and 10." << RESET << endl;
+            break;
+        }
+        }
+    } while (choice != 0);
 
     return 0;
-}
-
-void manageMedicinesMenu()
-{
-    cout << "Manage Medicines" << endl;
-    cout << "Please select an option" << endl;
-
-    cout << "1. View Medicines" << endl;
-    cout << "2. Add Medicine" << endl;
-    cout << "3. Delete Medicine" << endl;
-    cout << "4. Update Medicine" << endl;
-    cout << "5. Back" << endl;
-
-    cout << "Enter option: ";
-
-    int option;
-    cin >> option;
-
-    switch (option)
-    {
-    case 1:
-        viewMedicines();
-        break;
-    case 2:
-        addMedicine();
-        break;
-    case 3:
-        deleteMedicine();
-        break;
-    case 4:
-        updateMedicine();
-        break;
-    case 5:
-        main();
-        break;
-    default:
-        cout << "Invalid option! Try Again" << endl;
-        manageMedicinesMenu();
-    }
-}
-
-void viewMedicines()
-{
-    compareViewMedicines();
-}
-
-void addMedicine()
-{
-    cout << "Add Medicine" << endl;
-    cout << "Please enter the following details" << endl;
-
-    cout << "Name: ";
-    string name;
-    cin >> name;
-
-    cout << "Price: ";
-    double price;
-    cin >> price;
-
-    cout << "Quantity: ";
-    int quantity;
-    cin >> quantity;
-
-    cout << "Expiry Date: ";
-    string expiryDate;
-    cin >> expiryDate;
-
-    cout << "Manufacturing Date: ";
-    string manufacturingDate;
-    cin >> manufacturingDate;
-
-    cout << "Description: ";
-    string description;
-    cin >> description;
-
-    compareAddMedicine(name, price, quantity, expiryDate, manufacturingDate, description);
-}
-
-void deleteMedicine()
-{
-    cout << "Delete Medicine" << endl;
-    cout << "Please enter the name of the medicine you want to delete" << endl;
-
-    string name;
-    cin >> name;
-
-    compareDeleteMedicine(name);
-}
-
-void updateMedicine()
-{
-    cout << "Update Medicine" << endl;
-    cout << "Please enter the name of the medicine you want to update" << endl;
-
-    string name;
-    cin >> name;
-
-    compareDeleteMedicine(name);
-    addMedicine();
-}
-
-void searchMedicinesMenu()
-{
-    cout << "Search Medicines" << endl;
-    cout << "Please select an option" << endl;
-
-    cout << "1. Search by Name" << endl;
-    cout << "2. Search by Price" << endl;
-    cout << "3. Search by Quantity" << endl;
-    cout << "4. Search by Expiry Date" << endl;
-    cout << "5. Search by Manufacturing Date" << endl;
-    cout << "6. Back" << endl;
-
-    cout << "Enter option: ";
-
-    int option;
-    cin >> option;
-
-    switch (option)
-    {
-    case 1:
-        searchByName();
-        break;
-    case 2:
-        searchByPrice();
-        break;
-    case 3:
-        searchByQuantity();
-        break;
-    case 4:
-        searchByExpiryDate();
-        break;
-    case 5:
-        searchByManufacturingDate();
-        break;
-    case 6:
-        main();
-        break;
-    default:
-        cout << "Invalid option! Try Again" << endl;
-        searchMedicinesMenu();
-    }
-}
-
-void searchByName()
-{
-    cout << "Search by Name" << endl;
-    cout << "Please enter the name of the medicine you want to search" << endl;
-
-    string name;
-    cin >> name;
-
-    compareSearchByName(name);
-}
-
-void searchByPrice()
-{
-    cout << "Search by Price" << endl;
-    cout << "Please enter the price of the medicine you want to search" << endl;
-
-    double price;
-    cin >> price;
-
-    compareSearchByPrice(price);
-}
-
-void searchByQuantity()
-{
-    cout << "Search by Quantity" << endl;
-    cout << "Please enter the quantity of the medicine you want to search" << endl;
-
-    int quantity;
-    cin >> quantity;
-
-    compareSearchByQuantity(quantity);
-}
-
-void searchByExpiryDate()
-{
-    cout << "Search by Expiry Date" << endl;
-    cout << "Please enter the expiry date of the medicine you want to search" << endl;
-
-    string expiryDate;
-    cin >> expiryDate;
-
-    compareSearchByExpiryDate(expiryDate);
-}
-
-void searchByManufacturingDate()
-{
-    cout << "Search by Manufacturing Date" << endl;
-    cout << "Please enter the manufacturing date of the medicine you want to search" << endl;
-
-    string manufacturingDate;
-    cin >> manufacturingDate;
-
-    compareSearchByManufacturingDate(manufacturingDate);
-}
-
-void stockManagementMenu()
-{
-    cout << "Stock Management" << endl;
-    cout << "Please select an option" << endl;
-
-    cout << "1. View Low Stock Medicines" << endl;
-    cout << "2. View Out-of-Stock Medicines" << endl;
-    cout << "3. Back" << endl;
-
-    cout << "Enter option: ";
-
-    int option;
-    cin >> option;
-
-    switch (option)
-    {
-    case 1:
-        viewLowStockMedicines();
-        break;
-    case 2:
-        viewOutOfStockMedicines();
-        break;
-    case 3:
-        main();
-        break;
-    default:
-        cout << "Invalid option! Try Again" << endl;
-        stockManagementMenu();
-    }
-}
-
-void viewLowStockMedicines()
-{
-    cout << "View Low Stock Medicines" << endl;
-    compareViewLowStockMedicines();
-}
-
-void viewOutOfStockMedicines()
-{
-    cout << "View Out-of-Stock Medicines" << endl;
-    compareViewOutOfStockMedicines();
-}
-
-void sortMedicinesMenu()
-{
-    cout << "Sort Medicines" << endl;
-    cout << "Please select an option" << endl;
-
-    cout << "1. Sort by Name" << endl;
-    cout << "2. Sort by Price" << endl;
-    cout << "3. Sort by Quantity" << endl;
-    cout << "4. Sort by Expiry Date" << endl;
-    cout << "5. Sort by Manufacturing Date" << endl;
-    cout << "6. Back" << endl;
-
-    cout << "Enter option: ";
-
-    int option;
-    cin >> option;
-
-    switch (option)
-    {
-    case 1:
-        sortByName();
-        break;
-    case 2:
-        sortByPrice();
-        break;
-    case 3:
-        sortByQuantity();
-        break;
-    case 4:
-        sortByExpiryDate();
-        break;
-    case 5:
-        sortByManufacturingDate();
-        break;
-    case 6:
-        main();
-        break;
-    default:
-        cout << "Invalid option! Try Again" << endl;
-        sortMedicinesMenu();
-    }
-}
-
-void sortByName()
-{
-    cout << "Sort by Name" << endl;
-    compareSortByName();
-}
-
-void sortByPrice()
-{
-    cout << "Sort by Price" << endl;
-    compareSortByPrice();
-}
-
-void sortByQuantity()
-{
-    cout << "Sort by Quantity" << endl;
-    compareSortByQuantity();
-}
-
-void sortByExpiryDate()
-{
-    cout << "Sort by Expiry Date" << endl;
-    compareSortByExpiryDate();
-}
-
-void sortByManufacturingDate()
-{
-    cout << "Sort by Manufacturing Date" << endl;
-    compareSortByManufacturingDate();
-}
-
-void expiryAlertsMenu()
-{
-    cout << "Expiry Alerts" << endl;
-    cout << "Please select an option" << endl;
-
-    cout << "1. View Expiring Medicines" << endl;
-    cout << "2. View Expired Medicines" << endl;
-    cout << "3. Back" << endl;
-
-    cout << "Enter option: ";
-
-    int option;
-    cin >> option;
-
-    switch (option)
-    {
-    case 1:
-        viewExpiringMedicines();
-        break;
-    case 2:
-        viewExpiredMedicines();
-        break;
-    case 3:
-        main();
-        break;
-    default:
-        cout << "Invalid option! Try Again" << endl;
-        expiryAlertsMenu();
-    }
-}
-
-void viewExpiringMedicines()
-{
-    cout << "View Expiring Medicines" << endl;
-    compareViewExpiringMedicines();
-}
-
-void viewExpiredMedicines()
-{
-    cout << "View Expired Medicines" << endl;
-    compareViewExpiredMedicines();
 }
