@@ -94,18 +94,18 @@ string inputExpiryDate()
     return expiryDate;
 }
 
-struct Medicine
-{
-    int id;
-    string name;
-    double price;
-    int quantity;
-    string expiryDate;
-    Medicine *next;
-    Medicine *prev;
+// struct Medicine
+// {
+//     int id;
+//     string name;
+//     double price;
+//     int quantity;
+//     string expiryDate;
+//     Medicine *next;
+//     Medicine *prev;
 
-    // Default constructors
-    Medicine(int i, string n, double p, int q, string exp) : id(i), name(n), price(p), quantity(q), expiryDate(exp), next(nullptr), prev(nullptr) {}
-};
+//     // Default constructors
+//     Medicine(int i, string n, double p, int q, string exp) : id(i), name(n), price(p), quantity(q), expiryDate(exp), next(nullptr), prev(nullptr) {}
+// };
 
 #endif

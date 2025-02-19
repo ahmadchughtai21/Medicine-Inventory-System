@@ -10,7 +10,6 @@ using namespace std;
 // Main program with menu-driven interface
 int main()
 {
-    MedicineListStack medicineList;
     int choice;
 
     cout << "\n"
@@ -62,12 +61,6 @@ int main()
                 continue;
             }
 
-            if (!medicineList.isIdUnique(newId))
-            {
-                cout << RED << "ID already exists! Please use a unique ID." << RESET << endl;
-                continue;
-            }
-
             string name;
             cout << "Enter medicine name: ";
             cin.ignore();
@@ -83,7 +76,9 @@ int main()
 
             string expiryDate = inputExpiryDate();
 
-            medicineList.addMedicine(newId, name, price, quantity, expiryDate);
+            addMedicineLink(newId, name, price, quantity, expiryDate);
+            addMedicineQ(newId, name, price, quantity, expiryDate);
+            addMedicineS(newId, name, price, quantity, expiryDate);
             break;
         }
 
