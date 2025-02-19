@@ -42,7 +42,7 @@ public:
         return true;
     }
 
-    void addMedicine(int id, string name, double price, int quantity, string expiryDate)
+    void addMedicineS(int id, string name, double price, int quantity, string expiryDate)
     {
         Medicine *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
         newMedicine->next = top;
@@ -52,7 +52,7 @@ public:
         cout << GREEN << "Medicine added successfully!" << RESET << endl;
     }
 
-    void searchByName(const string &name)
+    void searchByNameS(const string &name)
     {
         Medicine *current = top;
         bool found = false;
@@ -77,7 +77,7 @@ public:
         }
     }
 
-    void searchById(int id)
+    void searchByIdS(int id)
     {
         Medicine *current = top;
         bool found = false;
@@ -103,7 +103,7 @@ public:
         }
     }
 
-    void searchByExpiryDate(const string &expiryDate)
+    void searchByExpiryDateS(const string &expiryDate)
     {
         Medicine *current = top;
         bool found = false;
@@ -162,7 +162,7 @@ public:
         return i;
     }
 
-    void quickSortByName(Medicine *start, Medicine *end)
+    void quickSortByNameS(Medicine *start, Medicine *end)
     {
         if (start != nullptr && end != nullptr && start != end && start != end->next)
         {
@@ -170,8 +170,8 @@ public:
             Medicine *temp = start;
             while (temp->next != pivot)
                 temp = temp->next;
-            quickSortByName(start, temp);
-            quickSortByName(pivot->next, end);
+            quickSortByNameS(start, temp);
+            quickSortByNameS(pivot->next, end);
         }
     }
 
@@ -179,7 +179,7 @@ public:
     {
         if (top == nullptr || top->next == nullptr)
             return;
-        quickSortByName(top, getLastNode(top));
+        quickSortByNameS(top, getLastNode(top));
     }
 
     Medicine *partitionById(Medicine *start, Medicine *end)
@@ -207,7 +207,7 @@ public:
         return i;
     }
 
-    void quickSortById(Medicine *start, Medicine *end)
+    void quickSortByIdS(Medicine *start, Medicine *end)
     {
         if (start != nullptr && end != nullptr && start != end && start != end->next)
         {
@@ -215,8 +215,8 @@ public:
             Medicine *temp = start;
             while (temp->next != pivot)
                 temp = temp->next;
-            quickSortById(start, temp);
-            quickSortById(pivot->next, end);
+            quickSortByIdS(start, temp);
+            quickSortByIdS(pivot->next, end);
         }
     }
 
@@ -224,7 +224,7 @@ public:
     {
         if (top == nullptr || top->next == nullptr)
             return;
-        quickSortById(top, getLastNode(top));
+        quickSortByIdS(top, getLastNode(top));
     }
 
     Medicine *partitionByExpiryDate(Medicine *start, Medicine *end)
@@ -252,7 +252,7 @@ public:
         return i;
     }
 
-    void quickSortByExpiryDate(Medicine *start, Medicine *end)
+    void quickSortByExpiryDateS(Medicine *start, Medicine *end)
     {
         if (start != nullptr && end != nullptr && start != end && start != end->next)
         {
@@ -260,8 +260,8 @@ public:
             Medicine *temp = start;
             while (temp->next != pivot)
                 temp = temp->next;
-            quickSortByExpiryDate(start, temp);
-            quickSortByExpiryDate(pivot->next, end);
+            quickSortByExpiryDateS(start, temp);
+            quickSortByExpiryDateS(pivot->next, end);
         }
     }
 
@@ -269,10 +269,10 @@ public:
     {
         if (top == nullptr || top->next == nullptr)
             return;
-        quickSortByExpiryDate(top, getLastNode(top));
+        quickSortByExpiryDateS(top, getLastNode(top));
     }
 
-    bool updateMedicine(int id)
+    bool updateMedicineS(int id)
     {
         Medicine *current = top;
 
@@ -301,7 +301,7 @@ public:
         return false;
     }
 
-    void autoDeleteExpired(int currentMonth, int currentYear)
+    void autoDeleteExpiredS(int currentMonth, int currentYear)
     {
         Medicine *newTop = nullptr;
         Medicine *current = top;
@@ -341,7 +341,7 @@ public:
         }
     }
 
-    void displayAll()
+    void displayAllS()
     {
         if (top == nullptr)
         {
