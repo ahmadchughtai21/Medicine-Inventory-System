@@ -4,30 +4,44 @@
 #include <limits>
 #include "head.cpp"
 
+// Define color constants
+#define GREEN "\033[32m"
+#define RED "\033[31m"
+#define CYAN "\033[36m"
+#define RESET "\033[0m"
+
+// Function to input expiry date
 using namespace std;
 
-struct Medicine
+string inputExpiryDate() {
+    string expiryDate;
+    cout << "Enter Expiry Date (MM/YYYY): ";
+    cin >> expiryDate;
+    return expiryDate;
+}
+
+struct MedicineS
 {
     int id;
     string name;
     double price;
     int quantity;
     string expiryDate;
-    Medicine *next;
+    MedicineS *next;
 
-    Medicine(int id, string name, double price, int quantity, string expiryDate)
+    MedicineS(int id, string name, double price, int quantity, string expiryDate)
         : id(id), name(name), price(price), quantity(quantity), expiryDate(expiryDate), next(nullptr) {}
 };
 
-Medicine *top = nullptr;
+MedicineS *top = nullptr;
 int count = 0;
 
 void deleteAllMedicinesS()
 {
-    Medicine *current = top;
-    while (current != nullptr)
+    MedicineS *current = top;
+    while (current != nullptr) 
     {
-        Medicine *next = current->next;
+        MedicineS *next = current->next;
         delete current;
         current = next;
     }
@@ -37,7 +51,7 @@ void deleteAllMedicinesS()
 
 bool isIdUniqueS(int id)
 {
-    Medicine *current = top;
+    MedicineS *current = top;
     while (current != nullptr)
     {
         if (current->id == id)
@@ -49,7 +63,7 @@ bool isIdUniqueS(int id)
 
 void addMedicineS(int id, string name, double price, int quantity, string expiryDate)
 {
-    Medicine *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
+    MedicineS *newMedicine = new MedicineS(id, name, price, quantity, expiryDate);
     newMedicine->next = top;
     top = newMedicine;
     count++;
@@ -59,7 +73,7 @@ void addMedicineS(int id, string name, double price, int quantity, string expiry
 
 void searchByNameS(const string &name)
 {
-    Medicine *current = top;
+    MedicineS *current = top;
     bool found = false;
 
     cout << "\n"
@@ -84,7 +98,7 @@ void searchByNameS(const string &name)
 
 void searchByIdS(int id)
 {
-    Medicine *current = top;
+    MedicineS *current = top;
     bool found = false;
 
     cout << "\n"
@@ -110,7 +124,7 @@ void searchByIdS(int id)
 
 void searchByExpiryDateS(const string &expiryDate)
 {
-    Medicine *current = top;
+    MedicineS *current = top;
     bool found = false;
 
     cout << "\n"
@@ -133,7 +147,7 @@ void searchByExpiryDateS(const string &expiryDate)
     }
 }
 
-Medicine *getLastNodeS(Medicine *node)
+MedicineS *getLastNodeS(MedicineS *node)
 {
     while (node && node->next)
     {
@@ -142,12 +156,12 @@ Medicine *getLastNodeS(Medicine *node)
     return node;
 }
 
-Medicine *partitionByNameS(Medicine *start, Medicine *end)
+MedicineS *partitionByNameS(MedicineS *start, MedicineS *end)
 {
     string pivot = end->name;
-    Medicine *i = start;
+    MedicineS *i = start;
 
-    for (Medicine *j = start; j != end; j = j->next)
+    for (MedicineS *j = start; j != end; j = j->next)
     {
         if (j->name < pivot)
         {
@@ -167,12 +181,12 @@ Medicine *partitionByNameS(Medicine *start, Medicine *end)
     return i;
 }
 
-void quickSortByNameS(Medicine *start, Medicine *end)
+void quickSortByNameS(MedicineS *start, MedicineS *end)
 {
     if (start != nullptr && end != nullptr && start != end && start != end->next)
     {
-        Medicine *pivot = partitionByNameS(start, end);
-        Medicine *temp = start;
+        MedicineS *pivot = partitionByNameS(start, end);
+        MedicineS *temp = start;
         while (temp->next != pivot)
             temp = temp->next;
         quickSortByNameS(start, temp);
@@ -180,19 +194,19 @@ void quickSortByNameS(Medicine *start, Medicine *end)
     }
 }
 
-void sortByName()
+void sortByNameS()
 {
     if (top == nullptr || top->next == nullptr)
         return;
     quickSortByNameS(top, getLastNodeS(top));
 }
 
-Medicine *partitionByIdS(Medicine *start, Medicine *end)
+MedicineS *partitionByIdS(MedicineS *start, MedicineS *end)
 {
     int pivot = end->id;
-    Medicine *i = start;
+    MedicineS *i = start;
 
-    for (Medicine *j = start; j != end; j = j->next)
+    for (MedicineS *j = start; j != end; j = j->next)
     {
         if (j->id < pivot)
         {
@@ -212,12 +226,12 @@ Medicine *partitionByIdS(Medicine *start, Medicine *end)
     return i;
 }
 
-void quickSortById(Medicine *start, Medicine *end)
+void quickSortByIdS(MedicineS *start, MedicineS *end)
 {
     if (start != nullptr && end != nullptr && start != end && start != end->next)
     {
-        Medicine *pivot = partitionByIdS(start, end);
-        Medicine *temp = start;
+        MedicineS *pivot = partitionByIdS(start, end);
+        MedicineS *temp = start;
         while (temp->next != pivot)
             temp = temp->next;
         quickSortByIdS(start, temp);
@@ -232,12 +246,12 @@ void sortByIdS()
     quickSortByIdS(top, getLastNodeS(top));
 }
 
-Medicine *partitionByExpiryDateS(Medicine *start, Medicine *end)
+MedicineS *partitionByExpiryDateS(MedicineS *start, MedicineS *end)
 {
     string pivot = end->expiryDate;
-    Medicine *i = start;
+    MedicineS *i = start;
 
-    for (Medicine *j = start; j != end; j = j->next)
+    for (MedicineS *j = start; j != end; j = j->next)
     {
         if (j->expiryDate < pivot)
         {
@@ -257,16 +271,16 @@ Medicine *partitionByExpiryDateS(Medicine *start, Medicine *end)
     return i;
 }
 
-void quickSortByExpiryDateS(Medicine *start, Medicine *end)
+void quickSortByExpiryDateS(MedicineS *start, MedicineS *end)
 {
     if (start != nullptr && end != nullptr && start != end && start != end->next)
     {
-        Medicine *pivot = partitionByExpiryDateS(start, end);
-        Medicine *temp = start;
+        MedicineS *pivot = partitionByExpiryDateS(start, end);
+        MedicineS *temp = start;
         while (temp->next != pivot)
             temp = temp->next;
-        quickSortByExpiryDate(start, temp);
-        quickSortByExpiryDate(pivot->next, end);
+        quickSortByExpiryDateS(start, temp);
+        quickSortByExpiryDateS(pivot->next, end);
     }
 }
 
@@ -279,7 +293,7 @@ void sortByExpiryDateS()
 
 bool updateMedicineS(int id)
 {
-    Medicine *current = top;
+    MedicineS *current = top;
 
     while (current != nullptr)
     {
@@ -308,8 +322,8 @@ bool updateMedicineS(int id)
 
 void autoDeleteExpiredS(int currentMonth, int currentYear)
 {
-    Medicine *newTop = nullptr;
-    Medicine *current = top;
+    MedicineS *newTop = nullptr;
+    MedicineS *current = top;
     bool foundExpired = false;
 
     while (current != nullptr)
@@ -319,7 +333,7 @@ void autoDeleteExpiredS(int currentMonth, int currentYear)
         int expiryMonth = stoi(monthStr);
         int expiryYear = stoi(yearStr);
 
-        Medicine *next = current->next;
+        MedicineS *next = current->next;
 
         if (expiryYear < currentYear || (expiryYear == currentYear && expiryMonth < currentMonth))
         {
@@ -361,7 +375,7 @@ void displayAllS()
 
     printHeaderS();
 
-    Medicine *current = top;
+    MedicineS *current = top;
     while (current != nullptr)
     {
         printMedicineS(current);
@@ -377,7 +391,7 @@ void printHeaderS()
     cout << string(60, '-') << endl;
 }
 
-void printMedicineS(Medicine *med)
+void printMedicineS(MedicineS *med)
 {
     cout << setw(5) << med->id
          << setw(20) << med->name
