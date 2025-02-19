@@ -47,7 +47,7 @@ public:
         }
     }
 
-    bool isIdUnique(int id)
+    bool isIdUniqueq(int id)
     {
         Medicine *current = front;
         while (current != nullptr)
