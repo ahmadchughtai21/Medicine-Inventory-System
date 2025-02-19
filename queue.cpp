@@ -268,56 +268,54 @@ void searchByExpiryDateQ(const string &expiryDate)
     }
 
     void autoDeleteExpiredQ(int currentMonth, int currentYear)
+{
+    MedicineQ *current = front;
+    MedicineQ *prev = nullptr;
+    bool foundExpired = false;
+
+    while (current != nullptr)
     {
-        MedicineQ *current = front;
-        MedicineQ *prev = nullptr;
-        bool foundExpired = false;
+        string monthStr = current->expiryDate.substr(0, 2);
+        string yearStr = current->expiryDate.substr(3, 4);
+        int expiryMonth = stoi(monthStr);
+        int expiryYear = stoi(yearStr);
 
-        while (current != nullptr)
+        if (expiryYear < currentYear || (expiryYear == currentYear && expiryMonth < currentMonth))
         {
-            string monthStr = current->expiryDate.substr(0, 2);
-            string yearStr = current->expiryDate.substr(3, 4);
-            int expiryMonth = stoi(monthStr);
-            int expiryYear = stoi(yearStr);
+            cout << "Auto-deleted expired medicine: " << current->name
+                 << " (ID: " << current->id
+                 << ", Expiry: " << current->expiryDate << ")" << endl;
 
-            if (expiryYear < currentYear || (expiryYear == currentYear && expiryMonth < currentMonth))
+            MedicineQ *temp = current;
+            
+            if (prev == nullptr)
             {
-                cout << "Auto-deleted expired medicine: " << current->name
-                     << " (ID: " << current->id
-                     << ", Expiry: " << current->expiryDate << ")" << endl;
-
-                if (prev == nullptr)
-                {
-                    front = current->next;
-                    if (front == nullptr)
-                        rear = nullptr;
-                }
-                else
-                {
-                MedicineQ *temp = current;
-                current = current->next;
-                delete temp;
-                ::count--;
-                foundExpired = true;
-                foundExpired = true;
-
-                ::count--;
-                current = current->next;
-                delete temp;
-                count--;
-                foundExpired = true;
+                front = current->next;
+                if (front == nullptr)
+                    rear = nullptr;
             }
             else
             {
-                prev = current;
-                current = current->next;
+                prev->next = current->next;
+                if (prev->next == nullptr)
+                    rear = prev;
             }
+            
+            current = current->next;
+            delete temp;
+            ::count--;
+            foundExpired = true;
         }
-
-        if (!foundExpired)
+        else
         {
-            cout << "No expired medicines found." << endl;
+            prev = current;
+            current = current->next;
         }
+    }
+
+    if (!foundExpired)
+    {
+        cout << "No expired medicines found." << endl;
     }
 }
 

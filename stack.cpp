@@ -336,7 +336,6 @@ void autoDeleteExpiredS(int currentMonth, int currentYear)
                  << " (ID: " << current->id
                  << ", Expiry: " << current->expiryDate << ")" << RESET << endl;
             delete current;
-            count--;
             medicineCount--;
         }
         else
