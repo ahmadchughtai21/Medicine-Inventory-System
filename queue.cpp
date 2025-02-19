@@ -87,7 +87,11 @@ void searchByNameQ(const string &name)
         current = current->next;
     }
 
+<<<<<<< HEAD
     if (!found)
+=======
+    bool isIdUniqueq(int id)
+>>>>>>> 0d6fa9cd83de131359e82866593a552a586dc7cd
     {
         cout << "Medicine with name '" << name << "' not found." << endl;
     }
