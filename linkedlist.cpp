@@ -6,27 +6,27 @@
 
 using namespace std;
 
-struct Medicine {
+struct MedicineL {
     int id;
     string name;
     double price;
     int quantity;
     string expiryDate;
-    Medicine *next;
-    Medicine *prev;
+    MedicineL *next;
+    MedicineL *prev;
 
     Medicine(int id, string name, double price, int quantity, string expiryDate)
         : id(id), name(name), price(price), quantity(quantity), expiryDate(expiryDate), next(nullptr), prev(nullptr) {}
 };
 
-Medicine* head = nullptr;
-Medicine* tail = nullptr;
+MedicineL* head = nullptr;
+MedicineL* tail = nullptr;
 int count = 0;
 
 void deleteAllMedicines() {
-    Medicine *current = head;
+    MedicineL *current = head;
     while (current != nullptr) {
-        Medicine *next = current->next;
+        MedicineL *next = current->next;
         delete current;
         current = next;
     }
@@ -35,7 +35,7 @@ void deleteAllMedicines() {
 }
 
 bool isIdUniqueLink(int id) {
-    Medicine *current = head;
+    MedicineL *current = head;
     while (current != nullptr) {
         if (current->id == id)
             return false;
@@ -45,7 +45,7 @@ bool isIdUniqueLink(int id) {
 }
 
 void addMedicineLink(int id, string name, double price, int quantity, string expiryDate) {
-    Medicine *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
+    MedicineL *newMedicine = new Medicine(id, name, price, quantity, expiryDate);
 
     if (head == nullptr) {
         head = tail = newMedicine;
@@ -60,7 +60,7 @@ void addMedicineLink(int id, string name, double price, int quantity, string exp
 }
 
 void searchByNameLink(const string &name) {
-    Medicine *current = head;
+    MedicineL *current = head;
     bool found = false;
 
     cout << "\nSearch Results:" << endl;
@@ -80,7 +80,7 @@ void searchByNameLink(const string &name) {
 }
 
 void searchByIdLink(int id) {
-    Medicine *current = head;
+    MedicineL *current = head;
     bool found = false;
 
     cout << "\nSearch Results:" << endl;
@@ -101,7 +101,7 @@ void searchByIdLink(int id) {
 }
 
 void searchByExpiryDateLink(const string &expiryDate) {
-    Medicine *current = head;
+    MedicineL *current = head;
     bool found = false;
 
     cout << "\nSearch Results:" << endl;
@@ -120,18 +120,18 @@ void searchByExpiryDateLink(const string &expiryDate) {
     }
 }
 
-Medicine *getLastNode(Medicine *node) {
+MedicineL *getLastNode(MedicineL *node) {
     while (node && node->next) {
         node = node->next;
     }
     return node;
 }
 
-Medicine *partitionByName(Medicine *low, Medicine *high) {
+MedicineL *partitionByName(MedicineL *low, MedicineL *high) {
     string pivot = high->name;
-    Medicine *i = low->prev;
+    MedicineL *i = low->prev;
 
-    for (Medicine *j = low; j != high; j = j->next) {
+    for (MedicineL *j = low; j != high; j = j->next) {
         if (j->name < pivot) {
             i = (i == nullptr) ? low : i->next;
             swap(i->name, j->name);
@@ -146,9 +146,9 @@ Medicine *partitionByName(Medicine *low, Medicine *high) {
     return i;
 }
 
-void quickSortByNameLink(Medicine *low, Medicine *high) {
+void quickSortByNameLink(MedicineL *low, MedicineL *high) {
     if (low && high && low != high && low != high->next) {
-        Medicine *pivot = partitionByName(low, high);
+        MedicineL *pivot = partitionByName(low, high);
         quickSortByNameLink(low, pivot->prev);
         quickSortByNameLink(pivot->next, high);
     }
@@ -160,11 +160,11 @@ void sortByNameLink() {
     quickSortByNameLink(head, getLastNode(head));
 }
 
-Medicine *partitionById(Medicine *low, Medicine *high) {
+MedicineL *partitionById(MedicineL *low, MedicineL *high) {
     int pivot = high->id;
-    Medicine *i = low->prev;
+    MedicineL *i = low->prev;
 
-    for (Medicine *j = low; j != high; j = j->next) {
+    for (MedicineL *j = low; j != high; j = j->next) {
         if (j->id < pivot) {
             i = (i == nullptr) ? low : i->next;
             swap(i->name, j->name);
@@ -179,25 +179,24 @@ Medicine *partitionById(Medicine *low, Medicine *high) {
     return i;
 }
 
-void quickSortByIdLink(Medicine *low, Medicine *high) {
+void quickSortByIdLink(MedicineL *low, MedicineL *high) {
     if (low && high && low != high && low != high->next) {
-        Medicine *pivot = partitionById(low, high);
+        MedicineL *pivot = partitionById(low, high);
         quickSortByIdLink(low, pivot->prev);
         quickSortByIdLink(pivot->next, high);
     }
 }
-
 void sortById() {
     if (head == nullptr || head->next == nullptr)
         return;
     quickSortByIdLink(head, getLastNode(head));
 }
 
-Medicine *partitionByExpiryDate(Medicine *low, Medicine *high) {
+MedicineL *partitionByExpiryDate(MedicineL *low, MedicineL *high) {
     string pivot = high->expiryDate;
-    Medicine *i = low->prev;
+    MedicineL *i = low->prev;
 
-    for (Medicine *j = low; j != high; j = j->next) {
+    for (MedicineL *j = low; j != high; j = j->next) {
         if (j->expiryDate < pivot) {
             i = (i == nullptr) ? low : i->next;
             swap(i->name, j->name);
@@ -212,9 +211,9 @@ Medicine *partitionByExpiryDate(Medicine *low, Medicine *high) {
     return i;
 }
 
-void quickSortByExpiryDateLink(Medicine *low, Medicine *high) {
+void quickSortByExpiryDateLink(MedicineL *low, MedicineL *high) {
     if (low && high && low != high && low != high->next) {
-        Medicine *pivot = partitionByExpiryDate(low, high);
+        MedicineL *pivot = partitionByExpiryDate(low, high);
         quickSortByExpiryDateLink(low, pivot->prev);
         quickSortByExpiryDateLink(pivot->next, high);
     }
@@ -227,7 +226,7 @@ void sortByExpiryDateLink() {
 }
 
 bool updateMedicineLink(int id) {
-    Medicine *current = head;
+    MedicineL *current = head;
 
     while (current != nullptr) {
         if (current->id == id) {
@@ -253,7 +252,7 @@ bool updateMedicineLink(int id) {
 }
 
 void autoDeleteExpiredLink(int currentMonth, int currentYear) {
-    Medicine *current = head;
+    MedicineL *current = head;
     bool foundExpired = false;
 
     while (current != nullptr) {
@@ -262,7 +261,7 @@ void autoDeleteExpiredLink(int currentMonth, int currentYear) {
         int expiryMonth = stoi(monthStr);
         int expiryYear = stoi(yearStr);
 
-        Medicine *toDelete = current;
+        MedicineL *toDelete = current;
         current = current->next;
 
         if (expiryYear < currentYear || (expiryYear == currentYear && expiryMonth < currentMonth)) {
@@ -288,7 +287,7 @@ void displayAllLink() {
 
     printHeaderLink();
 
-    Medicine *current = head;
+    MedicineL *current = head;
     while (current != nullptr) {
         printMedicineLink(current);
         current = current->next;
@@ -302,7 +301,7 @@ void printHeaderLink() {
     cout << string(60, '-') << endl;
 }
 
-void printMedicineLink(Medicine *med) {
+void printMedicineLink(MedicineL *med) {
     cout << setw(5) << med->id
          << setw(20) << med->name
          << setw(10) << fixed << setprecision(2) << med->price
@@ -310,12 +309,12 @@ void printMedicineLink(Medicine *med) {
          << setw(15) << med->expiryDate << endl;
 }
 
-void swapNodesLink(Medicine *a, Medicine *b) {
+void swapNodesLink(MedicineL *a, MedicineL *b) {
     if (a == b)
         return;
 
-    Medicine *aPrev = a->prev;
-    Medicine *bNext = b->next;
+    MedicineL *aPrev = a->prev;
+    MedicineL *bNext = b->next;
 
     if (aPrev)
         aPrev->next = b;
@@ -333,7 +332,7 @@ void swapNodesLink(Medicine *a, Medicine *b) {
     b->prev = aPrev;
 }
 
-void removeNodeLink(Medicine *node) {
+void removeNodeLink(MedicineL *node) {
     if (node->prev)
         node->prev->next = node->next;
     else
