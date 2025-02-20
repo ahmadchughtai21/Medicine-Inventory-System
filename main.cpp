@@ -13,6 +13,7 @@ int main()
     cout << "1. Linked List" << endl;
     cout << "2. Stack" << endl;
     cout << "3. Queue" << endl;
+    cout << "Enter your choice: ";
 
     int choice;
     cin >> choice;
