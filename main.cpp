@@ -10,9 +10,11 @@ using namespace std;
 // Main program with menu-driven interface
 int main()
 {
+main:
     cout << "1. Linked List" << endl;
     cout << "2. Stack" << endl;
     cout << "3. Queue" << endl;
+    cout << "4. Exit" << endl;
     cout << "Enter your choice: ";
 
     int choice;
@@ -46,7 +48,7 @@ int main()
             cout << "8. Display All Medicines\n";
             cout << "9. Update Medicine\n";
             cout << "10. Auto-Delete Expired\n";
-            cout << "0. Exit\n";
+            cout << "0. Back\n";
             cout << "Enter your choice: ";
 
             // Input validation for menu choice
@@ -209,10 +211,7 @@ int main()
 
             case 0:
             { // Exit Program
-                cout << "\n=========================================================" << endl;
-                cout << GREEN << "   Thank you for using the Medicine Management System" << RESET << endl;
-                cout << "=========================================================" << endl;
-                break;
+                goto main;
             }
 
             default:
@@ -250,7 +249,7 @@ int main()
             cout << "8. Display All Medicines\n";
             cout << "9. Update Medicine\n";
             cout << "10. Auto-Delete Expired\n";
-            cout << "0. Exit\n";
+            cout << "0. Back\n";
             cout << "Enter your choice: ";
 
             // Input validation for menu choice
@@ -413,10 +412,7 @@ int main()
 
             case 0:
             { // Exit Program
-                cout << "\n=========================================================" << endl;
-                cout << GREEN << "   Thank you for using the Medicine Management System" << RESET << endl;
-                cout << "=========================================================" << endl;
-                break;
+                goto main;
             }
 
             default:
@@ -454,7 +450,7 @@ int main()
             cout << "8. Display All Medicines\n";
             cout << "9. Update Medicine\n";
             cout << "10. Auto-Delete Expired\n";
-            cout << "0. Exit\n";
+            cout << "0. Back\n";
             cout << "Enter your choice: ";
 
             // Input validation for menu choice
@@ -617,10 +613,7 @@ int main()
 
             case 0:
             { // Exit Program
-                cout << "\n=========================================================" << endl;
-                cout << GREEN << "   Thank you for using the Medicine Management System" << RESET << endl;
-                cout << "=========================================================" << endl;
-                break;
+                goto main;
             }
 
             default:
@@ -631,6 +624,14 @@ int main()
             }
         } while (choice != 0);
     }
+    case 4:
+    {
+        cout << "\n=========================================================" << endl;
+        cout << GREEN << "   Thank you for using the Medicine Management System" << RESET << endl;
+        cout << "=========================================================" << endl;
+        break;
+    }
+
     default:
         cout << "Invalid choice\n";
     }
